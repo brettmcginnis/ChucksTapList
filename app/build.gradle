@@ -10,10 +10,10 @@ apply plugin: 'kotlin-android'
 android {
     signingConfigs {
         release {
-        storeFile file('/Users/serge/ChucksKey')
-            keyAlias 'key0'
-            storePassword '*******'
-            keyPassword '*******'
+            storeFile file("${rootProject.projectDir}/chuck_signing_key.jks")
+            keyAlias System.getenv("SigningKeyAlias")
+            storePassword System.getenv("SigningKeyPassword")
+            keyPassword System.getenv("SigningKeyPassword")
         }
     }
     compileSdk 31

@@ -1,0 +1,24 @@
+image: androidsdk/android-31
+
+before_script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - export GRADLE_OPTS='-Dorg.gradle.daemon=false -Dorg.gradle.parallel=true'
+#    - echo "MAPS_API_KEY=${PROD_GOOGLE_MAPS_API_KEY}" >> local.properties
+#    - cat "$FIREBASE_JSON" > $(pwd)/app/google-services.json
+
+cache:
+  key: ${CI_PROJECT_ID}
+  paths:
+    - .gradle/
+
+stages:
+  - build
+  - deploy
+
+variables:
+  BUILD_NUMBER: $CI_PIPELINE_ID
+
+include:
+  - local: .gitlab/analysis.gitlab-ci.yml
+  - local: .gitlab/archive.gitlab-ci.yml
+  - local: .gitlab/test.gitlab-ci.yml
