@@ -16,10 +16,12 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +31,8 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.serge.chuckstaplist.api.TapModel
 import com.serge.chuckstaplist.ui.theme.ChucksTapListTheme
 import com.serge.chuckstaplist.ui.theme.colorSetStateSaver
+
+private const val SCROLL_OFFSET_HIDE_HEADER = 50
 
 private val TAP_LIST_COLUMNS = listOf(
     TapListColumn(0, "#", .5f, TapListSortState.Type.TAP),
@@ -47,47 +51,26 @@ fun ListChucksTaps(
     onStoreSelected: (ChucksStore) -> Unit,
 ) = Column {
     val density = LocalDensity.current
-    val (screenWidth, screenHeight) = LocalConfiguration.current.run { screenWidthDp to screenHeightDp }
-    val isLandscape = screenWidth > screenHeight
+    val screenHeight = LocalConfiguration.current.screenHeightDp
 
-    var sortState by remember { mutableStateOf(TapListSortState(0, true, TAP_LIST_COLUMNS[0].sortType)) }
     var colorFilterState by rememberSaveable(saver = colorSetStateSaver) { mutableStateOf(emptySet()) }
-
     val scrollState = rememberLazyListState()
+    var sortState by remember { mutableStateOf(TapListSortState(0, true, TAP_LIST_COLUMNS[0].sortType)) }
+
     val shouldShowTopBar by remember {
         derivedStateOf {
             with(scrollState) {
-                val avgItemHeight = with(layoutInfo.visibleItemsInfo) { if(isEmpty()) 0 else sumOf { it.size } / size }
+                val avgItemHeight = with(layoutInfo.visibleItemsInfo) { if (isEmpty()) 0 else sumOf { it.size } / size }
                 val listFitsOnScreen = with(density) { avgItemHeight.toDp() } * layoutInfo.totalItemsCount < screenHeight.dp
-                val firstItemIsVisible = firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset < 50
+                val firstItemIsVisible = firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset < SCROLL_OFFSET_HIDE_HEADER
                 firstItemIsVisible || listFitsOnScreen
             }
         }
     }
 
     AnimatedVisibility(shouldShowTopBar) {
-        Column {
-            if (isLandscape) {
-                Row(Modifier.fillMaxWidth(), Arrangement.SpaceAround, Alignment.CenterVertically) {
-                    StoreSelector(selectedStore, onStoreSelected)
-
-                    ColorFilterRow(colorFilterState) { selectedColor ->
-                        colorFilterState = with(colorFilterState) {
-                            if (contains(selectedColor)) minus(selectedColor) else plus(selectedColor)
-                        }
-                    }
-                }
-            } else {
-                Box(Modifier.fillMaxWidth(), Alignment.Center) { StoreSelector(selectedStore, onStoreSelected) }
-
-                Row(Modifier.fillMaxWidth(), Arrangement.Center, Alignment.CenterVertically) {
-                    ColorFilterRow(colorFilterState) { selectedColor ->
-                        colorFilterState = with(colorFilterState) {
-                            if (contains(selectedColor)) minus(selectedColor) else plus(selectedColor)
-                        }
-                    }
-                }
-            }
+        HeaderTopBar(colorFilterState, { StoreSelector(selectedStore, onStoreSelected) }) {
+            colorFilterState = it
         }
     }
 
@@ -99,7 +82,7 @@ fun ListChucksTaps(
     }
 
     var expandedItems by rememberSaveable { mutableStateOf(emptySet<Int>()) }
-    if(isLoading) expandedItems = emptySet()
+    if (isLoading) expandedItems = emptySet()
 
     SwipeRefresh(
         rememberSwipeRefreshState(isLoading),
@@ -118,10 +101,38 @@ fun ListChucksTaps(
     }
 }
 
+@Composable
+private fun HeaderTopBar(
+    colorFilterSet: Set<Color>,
+    storeSelector: @Composable () -> Unit,
+    onFilterStateUpdated: (Set<Color>) -> Unit
+) = Column {
+    val colorFilterSetState by rememberUpdatedState(colorFilterSet)
+    val onFilterStateUpdatedState by rememberUpdatedState(onFilterStateUpdated)
+
+    fun updateColorFilterState(selectedColor: Color) {
+        with(colorFilterSetState) {
+            if (contains(selectedColor)) minus(selectedColor) else plus(selectedColor)
+        }.run(onFilterStateUpdatedState)
+    }
+
+    if (isLandscape()) {
+        Row(Modifier.fillMaxWidth(), Arrangement.SpaceAround, Alignment.CenterVertically) {
+            storeSelector()
+            ColorFilterRow(colorFilterSetState, ::updateColorFilterState)
+        }
+    } else {
+        Box(Modifier.fillMaxWidth(), Alignment.Center) { storeSelector() }
+
+        Row(Modifier.fillMaxWidth(), Arrangement.Center, Alignment.CenterVertically) {
+            ColorFilterRow(colorFilterSetState, ::updateColorFilterState)
+        }
+    }
+}
+
 @Preview(showBackground = true, widthDp = 400)
 @Composable
-private fun DefaultPreview() {
-
+fun TapListPreview() {
     ChucksTapListTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),

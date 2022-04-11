@@ -23,5 +23,3 @@ data class TapModel(
     @SerialName("shop") val shop: String? = null,
     @SerialName("type") val type: String? = null,
 )
-
-

@@ -13,13 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.serge.chuckstaplist.ui.theme.DarkGreen
 
-data class TapListColumn(
-    val index: Int,
-    val name: String,
-    val weight: Float,
-    val sortType: TapListSortState.Type
-)
-
 @Composable
 fun TapListHeader(
     columns: List<TapListColumn>,
@@ -45,4 +38,3 @@ fun TapListHeader(
         }
     }
 }
-

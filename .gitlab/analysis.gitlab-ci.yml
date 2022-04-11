@@ -8,21 +8,20 @@ lint:
   script:
     - ./gradlew lint
 
-#.detekt:
-#  stage: build
-#  extends: .exceptTags
-#  artifacts:
-#    when: always
-#    expire_in: never
-#    paths:
-#      - app/build/reports/detekt/**/*
-#
-#detektMain:
-#  extends: .detekt
-#  script:
-#    - ./gradlew detektMain
-#
-#detektTest:
-#  extends: .detekt
-#  script:
-#    - ./gradlew detektDebugUnitTest
+.detekt:
+  stage: build
+  artifacts:
+    when: always
+    expire_in: never
+    paths:
+      - app/build/reports/detekt/**/*
+
+detektMain:
+  extends: .detekt
+  script:
+    - ./gradlew detektMain
+
+detektTest:
+  extends: .detekt
+  script:
+    - ./gradlew detektDebugUnitTest

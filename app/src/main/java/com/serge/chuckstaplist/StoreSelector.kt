@@ -25,9 +25,7 @@ fun StoreSelector(
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = {
-            expanded = !expanded
-        }
+        onExpandedChange = { expanded = !expanded }
     ) {
         TextField(
             readOnly = true,

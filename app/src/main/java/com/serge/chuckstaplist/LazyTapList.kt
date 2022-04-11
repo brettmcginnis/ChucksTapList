@@ -41,25 +41,14 @@ fun LazyTapList(
     onClick: (TapModel) -> Unit
 ) = LazyColumn(Modifier.fillMaxSize(), state) {
     list.forEachIndexed { index, beer ->
-        val beerInfo = with(beer) {
-            listOf(
-                tapNumber.toString(),
-                name,
-                price?.let { "$$it" } ?: "???",
-                origin ?: "???",
-                "${abv ?: 0}%"
-            )
-        }
-
         val bgColor = if (index % 2 == 0) DarkGray else Color.Black
-        tapItem(beer, beerInfo, expandedItems.contains(beer.tapNumber), bgColor, colWeights, onClick)
+        tapItem(beer, expandedItems.contains(beer.tapNumber), bgColor, colWeights, onClick)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 private fun LazyListScope.tapItem(
     tap: TapModel,
-    beerInfo: List<String>,
     isExpanded: Boolean = false,
     bgColor: Color,
     colWeights: FloatArray,
@@ -76,7 +65,7 @@ private fun LazyListScope.tapItem(
             .animateItemPlacement()
     ) {
         Row(Modifier, Arrangement.Center, Alignment.CenterVertically) {
-            BeerMainInfo(beerInfo, tap.colorValue, colWeights)
+            TapMainInfo(tap, tap.colorValue, colWeights)
         }
         AnimatedVisibility(
             visible = isExpanded,
@@ -113,11 +102,11 @@ private fun LazyListScope.tapItem(
 }
 
 @Composable
-private fun RowScope.BeerMainInfo(
-    beerInfo: List<String>,
+private fun RowScope.TapMainInfo(
+    tap: TapModel,
     color: Color,
     colWeights: FloatArray
-) = beerInfo.forEachIndexed { index, beerColumnValue ->
+) = tap.info.forEachIndexed { index, beerColumnValue ->
     val alignment = if (index == 1) Alignment.CenterStart else Alignment.Center // don't center name
     Box(modifier = Modifier.weight(colWeights[index]), contentAlignment = alignment) {
         Text(
@@ -127,3 +116,11 @@ private fun RowScope.BeerMainInfo(
         )
     }
 }
+
+private val TapModel.info get() = listOf(
+    tapNumber.toString(),
+    name,
+    price?.let { "$$it" } ?: "???",
+    origin ?: "???",
+    "${abv ?: 0}%"
+)

@@ -1,7 +1,7 @@
 package com.serge.chuckstaplist
 
 import com.serge.chuckstaplist.api.TapModel
-import java.util.*
+import java.util.Objects
 import kotlin.Comparator
 
 data class TapListSortState(
@@ -21,7 +21,6 @@ data class TapListSortState(
         Type.COLOR -> Objects.compare(o1.color, o2.color, ::nullableStringComparator)
     }.let { if (isAscending) it else it * -1 }
 }
-
 
 private fun nullableStringComparator(s1: String?, s2: String?): Int {
     return s1?.compareTo(s2 ?: return -1) ?: 1

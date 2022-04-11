@@ -36,11 +36,11 @@ class MainActivity : ComponentActivity() {
 
                     var selectedStore by rememberSaveable { mutableStateOf(ChucksStore.GREENWOOD) }
                     val state by viewModel.state.collectAsState()
-                    val beers by remember { derivedStateOf { (state as? TapListViewModel.State.TapList)?.taps.orEmpty() } }
+                    val taps by remember { derivedStateOf { (state as? TapListViewModel.State.TapList)?.taps.orEmpty() } }
 
                     SideEffect { if (state is Empty) viewModel.loadTapList(selectedStore) }
 
-                    ListChucksTaps(beers, selectedStore, state is Loading) { selectedStore = it.also(viewModel::loadTapList) }
+                    ListChucksTaps(taps, selectedStore, state is Loading) { selectedStore = it.also(viewModel::loadTapList) }
                 }
             }
         }

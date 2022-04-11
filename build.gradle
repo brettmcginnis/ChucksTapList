@@ -1,12 +1,16 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 buildscript {
-    ext.kotlin_version = '1.6.10'
     ext {
+        kotlin_version = '1.6.10'
         compose_version = '1.1.1'
+        detekt_version = "1.19.0"
     }
 
     dependencies {
         classpath 'com.google.dagger:hilt-android-gradle-plugin:2.38.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detekt_version"
     }
     repositories {
         mavenCentral()
@@ -19,6 +23,35 @@ plugins {
 
     id "org.jetbrains.kotlin.plugin.serialization" version "1.6.0"
     id 'org.jetbrains.kotlin.jvm' version '1.6.10' apply false
+
+    id 'io.gitlab.arturbosch.detekt' version "$detekt_version"
+}
+
+subprojects {
+    apply plugin: "io.gitlab.arturbosch.detekt"
+
+    detekt {
+        toolVersion = "$detekt_version"
+        buildUponDefaultConfig = true
+        allRules = true
+        config = files("$rootDir/config/detekt/detekt.yml")
+        ignoreFailures = false
+        parallel = true
+    }
+
+    tasks.withType(Detekt).configureEach {
+        autoCorrect = true
+        it.reports {
+            txt.required.set(true)
+            xml.required.set(false)
+            html.required.set(false)
+            sarif.required.set(false)
+        }
+    }
+
+    dependencies {
+        detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version"
+    }
 }
 
 task clean(type: Delete) {

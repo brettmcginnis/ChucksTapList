@@ -3,10 +3,9 @@ package com.serge.chuckstaplist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.serge.chuckstaplist.TapListViewModel.State.TapList
-import com.serge.chuckstaplist.api.TapModel
 import com.serge.chuckstaplist.api.ChucksApi
+import com.serge.chuckstaplist.api.TapModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +17,7 @@ class TapListViewModel @Inject constructor(private val api: ChucksApi) : ViewMod
 
     sealed class State {
         object Empty : State()
-        object Loading: State()
+        object Loading : State()
         data class Error(val throwable: Throwable) : State()
         data class TapList(val taps: List<TapModel>) : State()
     }

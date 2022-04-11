@@ -1,0 +1,27 @@
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+
+processors:
+  active: true
+  exclude:
+    - 'DetektProgressListener'
+
+formatting:
+  active: true
+  MaximumLineLength:
+    active: false
+
+naming:
+  active: true
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+
+style:
+  active: true
+  MagicNumber:
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+  MaxLineLength:
+    maxLineLength: 150
+    excludeCommentStatements: true
