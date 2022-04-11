@@ -8,7 +8,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,10 +26,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.serge.chuckstaplist.api.TapModel
 import com.serge.chuckstaplist.colorValue
+import com.serge.chuckstaplist.openUntappdSearch
 import com.serge.chuckstaplist.ui.theme.DarkGray
 
 @Composable
@@ -54,6 +56,7 @@ private fun LazyListScope.tapItem(
     colWeights: FloatArray,
     onClick: (TapModel) -> Unit
 ) = item {
+    val context = LocalContext.current
     Column(
         Modifier
             .fillMaxWidth()
@@ -61,7 +64,7 @@ private fun LazyListScope.tapItem(
             .padding(2.dp)
             .border(2.dp, Color.Gray)
             .padding(2.dp)
-            .clickable { onClick(tap) }
+            .combinedClickable(onLongClick = { context.openUntappdSearch(tap) }) { onClick(tap) }
             .animateItemPlacement()
     ) {
         Row(Modifier, Arrangement.Center, Alignment.CenterVertically) {
