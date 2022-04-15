@@ -14,7 +14,7 @@ val Pink = Color(255, 0, 247)
 val Sky = Color(38, 241, 255)
 val Red = Color(255, 0, 0)
 val DarkGray = Color(32, 32, 32)
-val LightGray = Color(200, 200, 200)
+val Gray = Color(127, 127, 127)
 
 val colorSetStateSaver = Saver<MutableState<Set<Color>>, Set<Int>>(
     save = { state -> state.value.mapTo(HashSet(), Color::toArgb) },

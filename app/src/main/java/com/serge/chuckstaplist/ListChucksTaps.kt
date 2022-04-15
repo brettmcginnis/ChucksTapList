@@ -1,6 +1,5 @@
 package com.serge.chuckstaplist
 
-import LazyTapList
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

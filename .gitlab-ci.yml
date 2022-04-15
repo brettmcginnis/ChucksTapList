@@ -21,4 +21,4 @@ variables:
 include:
   - local: .gitlab/analysis.gitlab-ci.yml
   - local: .gitlab/archive.gitlab-ci.yml
-  - local: .gitlab/test.gitlab-ci.yml
+#  - local: .gitlab/test.gitlab-ci.yml

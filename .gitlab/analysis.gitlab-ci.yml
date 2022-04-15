@@ -1,27 +1,12 @@
-lint:
+detektAndLint:
   stage: build
   artifacts:
     when: always
     expire_in: never
     paths:
       - app/build/reports/**/*
+      - app/build/reports/detekt/**/*
   script:
     - ./gradlew lint
-
-.detekt:
-  stage: build
-  artifacts:
-    when: always
-    expire_in: never
-    paths:
-      - app/build/reports/detekt/**/*
-
-detektMain:
-  extends: .detekt
-  script:
     - ./gradlew detektMain
-
-detektTest:
-  extends: .detekt
-  script:
     - ./gradlew detektDebugUnitTest
