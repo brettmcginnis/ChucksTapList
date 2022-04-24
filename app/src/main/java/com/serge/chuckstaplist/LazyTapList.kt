@@ -28,11 +28,14 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,12 +60,22 @@ private const val MIN_MS_BETWEEN_SHAKES = 1_000L
 private const val SUB_ANIMATION_DURATION = 200
 private const val NUM_COLOR_CYCLE_REPETITIONS = 3
 
+@Immutable
+class ExpandedTaps(expandedTaps: Set<Int> = emptySet()) : Set<Int> by expandedTaps {
+    companion object {
+        val Saver = Saver<MutableState<ExpandedTaps>, Set<Int>>(
+            save = { state -> state.value.toSet() },
+            restore = { taps -> mutableStateOf(ExpandedTaps(taps)) },
+        )
+    }
+}
+
 @Composable
 fun LazyTapList(
-    list: List<TapModel>,
+    list: TapList,
     state: LazyListState = rememberLazyListState(),
-    expandedItems: Set<Int>,
-    colWeights: FloatArray,
+    expandedItems: ExpandedTaps,
+    colWeights: TapListColumns.Weights,
     onClick: (TapModel) -> Unit
 ) {
     val sensorManager = LocalContext.current.getSystemService<SensorManager>()
@@ -94,7 +107,7 @@ private fun LazyListScope.tapItem(
     isExpanded: Boolean = false,
     bgColor: Color,
     borderColor: Color,
-    colWeights: FloatArray,
+    colWeights: TapListColumns.Weights,
     onClick: (TapModel) -> Unit
 ) = item {
     val context = LocalContext.current
@@ -149,7 +162,7 @@ private fun LazyListScope.tapItem(
 private fun RowScope.TapMainInfo(
     tap: TapModel,
     color: Color,
-    colWeights: FloatArray
+    colWeights: TapListColumns.Weights
 ) = tap.info.forEachIndexed { index, beerColumnValue ->
     val alignment = if (index == 1) Alignment.CenterStart else Alignment.Center // don't center name
     Box(modifier = Modifier.weight(colWeights[index]), contentAlignment = alignment) {

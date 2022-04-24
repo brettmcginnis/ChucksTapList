@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,7 +16,7 @@ import com.serge.chuckstaplist.ui.theme.DarkGreen
 
 @Composable
 fun TapListHeader(
-    columns: List<TapListColumn>,
+    columns: TapListColumns,
     sortState: TapListSortState,
     onColumnClicked: (TapListColumn) -> Unit
 ) = Row(
@@ -37,4 +38,11 @@ fun TapListHeader(
             Text(nameWithSort, Modifier.padding(vertical = 4.dp), fontSize = 12.sp)
         }
     }
+}
+
+@Immutable
+class TapListColumns(columns: List<TapListColumn>) : List<TapListColumn> by columns {
+    @Immutable class Weights(weights: List<Float>) : List<Float> by weights
+
+    val weights by lazy { Weights(map { it.weight }) }
 }

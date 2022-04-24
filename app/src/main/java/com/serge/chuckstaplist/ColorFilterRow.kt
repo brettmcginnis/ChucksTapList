@@ -28,7 +28,7 @@ import com.serge.chuckstaplist.ui.theme.Yellow
 
 @Composable
 fun ColorFilterRow(
-    selectedFilters: Set<Color> = emptySet(),
+    selectedFilters: ColorFilterSet,
     onFilterSelected: (Color) -> Unit
 ) = listOf(Orange, Yellow, Green, Pink, Sky, Red, White).forEach { color ->
     val onFilterCallbackRemembered by rememberUpdatedState(onFilterSelected)
