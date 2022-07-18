@@ -2,9 +2,11 @@ package com.serge.chuckstaplist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.serge.chuckstaplist.TapListViewModel.State.TapList
+import com.serge.chuckstaplist.TapListViewModel.State.StoreInfo
 import com.serge.chuckstaplist.api.ChucksApi
 import com.serge.chuckstaplist.api.TapModel
+import com.serge.chuckstaplist.calendar.CalendarHelper
+import com.serge.chuckstaplist.calendar.FoodTruckEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,13 +15,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TapListViewModel @Inject constructor(private val api: ChucksApi) : ViewModel() {
+class TapListViewModel @Inject constructor(
+    private val api: ChucksApi,
+    private val calendarHelper: CalendarHelper,
+) : ViewModel() {
 
     sealed class State {
         object Empty : State()
         object Loading : State()
         data class Error(val throwable: Throwable) : State()
-        data class TapList(val taps: List<TapModel>) : State()
+        data class StoreInfo(val taps: List<TapModel>, val foodTrucks: List<FoodTruckEvent>) : State()
     }
 
     private val _state = MutableStateFlow<State>(State.Empty)
@@ -30,9 +35,11 @@ class TapListViewModel @Inject constructor(private val api: ChucksApi) : ViewMod
         _state.value = State.Loading
         coroutineContext.cancelChildren()
         launch {
-            _state.value = runCatching { api.getTapList(store.menuStr) }
-                .map { taps -> TapList(taps.filter { it.validEntry }) }
-                .getOrElse(State::Error)
+            _state.value = runCatching {
+                val taps = api.getTapList(store.menuStr)
+                val foodTrucks = calendarHelper.getFoodTrucks(store.calendarId)
+                taps to foodTrucks
+            }.map { (taps, foodTrucks) -> StoreInfo(taps.filter { it.validEntry }, foodTrucks) }.getOrElse(State::Error)
         }
     }
 

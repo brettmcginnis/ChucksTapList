@@ -1,8 +1,12 @@
 package com.serge.chuckstaplist
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -15,6 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Blue
+import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,7 +28,11 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.serge.chuckstaplist.api.TapModel
+import com.serge.chuckstaplist.calendar.FoodTruckEvent
+import com.serge.chuckstaplist.calendar.FoodTruckRow
+import com.serge.chuckstaplist.extensions.addDays
 import com.serge.chuckstaplist.ui.theme.ChucksTapListTheme
+import java.util.Date
 
 private const val SCROLL_OFFSET_HIDE_HEADER = 50
 
@@ -37,11 +47,16 @@ private val TAP_LIST_COLUMNS = listOf(
 @Immutable
 class TapList(taps: List<TapModel>) : List<TapModel> by taps
 
+@Immutable
+class FoodTruckList(foodTrucks: List<FoodTruckEvent>) : List<FoodTruckEvent> by foodTrucks
+
 @Composable
 fun ListChucksTaps(
     taps: TapList,
+    foodTrucks: FoodTruckList = FoodTruckList(emptyList()),
     selectedStore: ChucksStore = ChucksStore.GREENWOOD,
     isLoading: Boolean = false,
+    onTruckEventSelected: (FoodTruckEvent) -> Unit = {},
     onStoreSelected: (ChucksStore) -> Unit,
 ) = Column {
     val density = LocalDensity.current
@@ -66,6 +81,10 @@ fun ListChucksTaps(
         ColorFilterHeader(colorFilterState, setColorFilterState) {
             StoreSelector(selectedStore, onStoreSelected)
         }
+    }
+
+    AnimatedVisibility(foodTrucks.isNotEmpty()) {
+        FoodTruckRow(foodTrucks, onTruckEventSelected)
     }
 
     TapListHeader(TAP_LIST_COLUMNS, sortState) {
@@ -103,10 +122,15 @@ fun TapListPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
+            val foodTrucks = listOf(
+                FoodTruckEvent("Grilled Cheese Experience", "http://grilledcheeseseattle.com/", Date()),
+                FoodTruckEvent("Where Ya At Matt", "https://www.whereyaatmatt.com/", Date().addDays(1)),
+                FoodTruckEvent("El Camion", "http://elcamionseattle.com/", Date().addDays(2))
+            ).run(::FoodTruckList)
             listOf(
                 TapModel(1, "Duchesse"),
-                TapModel(2, "Some Really Really Long Beer Name Imprerial Stout")
-            ).run(::TapList).let { ListChucksTaps(it) {} }
+                TapModel(2, "Some Really Really Long Beer Name Imperial Stout")
+            ).run(::TapList).let { ListChucksTaps(it, foodTrucks = foodTrucks) {} }
         }
     }
 }
