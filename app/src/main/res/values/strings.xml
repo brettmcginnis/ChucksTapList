@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Chuck\'s Tap List</string>
+    <string name="food_truck_label">Food Trucks</string>
+    <string name="store_selector_label">Store</string>
 </resources>
