@@ -86,7 +86,9 @@ fun LazyTapList(
     val animatableColor = remember(highlightedIndex) { Animatable(Gray) }
     ScrollToEffect(state, highlightedIndex) {
         val colorsToAnimate = listOf(Red, Orange, Yellow, Green, Pink)
-        repeat(NUM_COLOR_CYCLE_REPETITIONS) { colorsToAnimate.forEach { animatableColor.animateTo(it, tween(SUB_ANIMATION_DURATION)) } }
+        repeat(NUM_COLOR_CYCLE_REPETITIONS) {
+            colorsToAnimate.forEach { color -> animatableColor.animateTo(color, tween(SUB_ANIMATION_DURATION)) }
+        }
         animatableColor.animateTo(Gray, tween(SUB_ANIMATION_DURATION))
         highlightedIndex = -1 // reset highlighted index after animation is done
     }

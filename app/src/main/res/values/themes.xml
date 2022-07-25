@@ -2,6 +2,7 @@
 <resources>
 
     <style name="Theme.ChucksTapList" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/dark_gray</item>
         <item name="android:statusBarColor">@color/dark_gray</item>
     </style>
 </resources>
