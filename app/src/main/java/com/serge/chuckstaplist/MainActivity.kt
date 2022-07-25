@@ -18,10 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.serge.chuckstaplist.TapListViewModel.State.Empty
-import com.serge.chuckstaplist.TapListViewModel.State.Loading
-import com.serge.chuckstaplist.TapListViewModel.State.StoreInfo
 import com.serge.chuckstaplist.foodtruck.FoodTruckEvent
+import com.serge.chuckstaplist.foodtruck.FoodTruckViewModel
 import com.serge.chuckstaplist.ui.theme.ChucksTapListTheme
 import com.serge.chuckstaplist.ui.theme.DarkGray
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,17 +42,26 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    val viewModel: TapListViewModel = viewModel()
+                    val tapListViewModel: TapListViewModel = viewModel()
+                    val foodTruckViewModel: FoodTruckViewModel = viewModel()
 
                     var selectedStore by rememberSaveable { mutableStateOf(ChucksStore.GREENWOOD) }
-                    val state by viewModel.state.collectAsState()
-                    val taps = (state as? StoreInfo)?.taps.orEmpty().run(::TapList)
-                    val foodTrucks = (state as? StoreInfo)?.foodTrucks.orEmpty().run(::FoodTruckList)
 
-                    SideEffect { if (state is Empty) viewModel.loadTapList(selectedStore) }
+                    val tapListState by tapListViewModel.state.collectAsState()
+                    val taps = (tapListState as? TapListViewModel.State.StoreInfo)
+                        ?.taps.orEmpty().run(::TapList)
 
-                    ListChucksTaps(taps, foodTrucks, selectedStore, state is Loading, onTruckEventSelected) {
-                        selectedStore = it.also(viewModel::loadTapList)
+                    val foodTruckState by foodTruckViewModel.state.collectAsState()
+                    val foodTrucks = (foodTruckState as? FoodTruckViewModel.State.TruckList)
+                        ?.foodTrucks.orEmpty().run(::FoodTruckList)
+
+                    SideEffect {
+                        if (tapListState is TapListViewModel.State.Empty) tapListViewModel.loadTapList(selectedStore)
+                        if (foodTruckState is FoodTruckViewModel.State.Empty) foodTruckViewModel.loadFoodTrucks(selectedStore)
+                    }
+
+                    ListChucksTaps(taps, foodTrucks, selectedStore, tapListState is TapListViewModel.State.Loading, onTruckEventSelected) {
+                        selectedStore = it.also(tapListViewModel::loadTapList).also(foodTruckViewModel::loadFoodTrucks)
                     }
                 }
             }
