@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.serge.chuckstaplist.TapListViewModel.State.StoreInfo
 import com.serge.chuckstaplist.api.ChucksApi
 import com.serge.chuckstaplist.api.TapModel
-import com.serge.chuckstaplist.calendar.CalendarHelper
-import com.serge.chuckstaplist.calendar.FoodTruckEvent
+import com.serge.chuckstaplist.foodtruck.FoodTruckEvent
+import com.serge.chuckstaplist.foodtruck.FoodTruckRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TapListViewModel @Inject constructor(
     private val api: ChucksApi,
-    private val calendarHelper: CalendarHelper,
+    private val foodTruckRepository: FoodTruckRepository,
 ) : ViewModel() {
 
     sealed class State {
@@ -37,7 +37,7 @@ class TapListViewModel @Inject constructor(
         launch {
             _state.value = runCatching {
                 val taps = api.getTapList(store.menuStr)
-                val foodTrucks = calendarHelper.getFoodTrucks(store.calendarId)
+                val foodTrucks = foodTruckRepository.getFoodTrucks(store.calendarId)
                 taps to foodTrucks
             }.map { (taps, foodTrucks) -> StoreInfo(taps.filter { it.validEntry }, foodTrucks) }.getOrElse(State::Error)
         }

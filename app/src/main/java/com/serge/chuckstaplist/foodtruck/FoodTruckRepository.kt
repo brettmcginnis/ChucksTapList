@@ -1,4 +1,4 @@
-package com.serge.chuckstaplist.calendar
+package com.serge.chuckstaplist.foodtruck
 
 import android.util.Log
 import androidx.core.text.HtmlCompat
@@ -14,11 +14,11 @@ import com.serge.chuckstaplist.extensions.toRFC3339Date
 import java.util.Date
 import javax.inject.Inject
 
-private const val FOOD_TRUCK_DAYS = 5L
+private const val FOOD_TRUCK_DAYS = 7L
 private const val STATUS_CONFIRMED = "confirmed"
 private const val TAG = "CalendarHelper"
 
-class CalendarHelper @Inject constructor(
+class FoodTruckRepository @Inject constructor(
     private val googleCalendarApi: GoogleCalendarApi,
     private val calendarApiKey: CalendarApiKey,
 ) {

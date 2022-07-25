@@ -21,7 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.serge.chuckstaplist.TapListViewModel.State.Empty
 import com.serge.chuckstaplist.TapListViewModel.State.Loading
 import com.serge.chuckstaplist.TapListViewModel.State.StoreInfo
-import com.serge.chuckstaplist.calendar.FoodTruckEvent
+import com.serge.chuckstaplist.foodtruck.FoodTruckEvent
 import com.serge.chuckstaplist.ui.theme.ChucksTapListTheme
 import com.serge.chuckstaplist.ui.theme.DarkGray
 import dagger.hilt.android.AndroidEntryPoint

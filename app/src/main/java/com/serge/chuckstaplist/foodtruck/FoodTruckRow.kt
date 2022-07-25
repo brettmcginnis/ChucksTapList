@@ -1,4 +1,4 @@
-package com.serge.chuckstaplist.calendar
+package com.serge.chuckstaplist.foodtruck
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border

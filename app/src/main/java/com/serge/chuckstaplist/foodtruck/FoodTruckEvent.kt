@@ -1,4 +1,4 @@
-package com.serge.chuckstaplist.calendar
+package com.serge.chuckstaplist.foodtruck
 
 import java.util.Date
 

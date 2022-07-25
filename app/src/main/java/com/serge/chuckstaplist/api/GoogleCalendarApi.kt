@@ -6,7 +6,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface GoogleCalendarApi {
-    @GET("{calendarId}/events")
+    @GET("{calendarId}/events?singleEvents=true")
     suspend fun getCalendar(
         @Path("calendarId") calendarId: String,
         @Query("key") apiKey: String,

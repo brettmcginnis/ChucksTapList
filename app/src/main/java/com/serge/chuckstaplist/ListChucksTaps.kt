@@ -22,9 +22,9 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.serge.chuckstaplist.api.TapModel
-import com.serge.chuckstaplist.calendar.FoodTruckEvent
-import com.serge.chuckstaplist.calendar.FoodTruckRow
 import com.serge.chuckstaplist.extensions.addDays
+import com.serge.chuckstaplist.foodtruck.FoodTruckEvent
+import com.serge.chuckstaplist.foodtruck.FoodTruckRow
 import com.serge.chuckstaplist.ui.theme.ChucksTapListTheme
 import java.util.Date
 
