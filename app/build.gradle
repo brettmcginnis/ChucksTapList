@@ -25,7 +25,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        buildConfigField "String", "CALENDAR_API_KEY", getLocalProperty("calendar_key")
+        buildConfigField "String", "CALENDAR_API_KEY", System.getenv("GoogleApiKey") ?: getLocalProperty("calendar_key")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
