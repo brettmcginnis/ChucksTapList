@@ -1,7 +1,5 @@
 package com.serge.chuckstaplist.network
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -24,16 +22,13 @@ object NetworkModule {
     fun provideJson() = Json {
         ignoreUnknownKeys = true
         coerceInputValues = true
+        encodeDefaults = true
+        isLenient = true
     }
 
     @Provides
     @Singleton
-    fun provideGson(): Gson = GsonBuilder().create()
-
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
-        .build()
+    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder().build()
 
     @Provides
     @Singleton
