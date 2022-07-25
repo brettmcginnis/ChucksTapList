@@ -7,6 +7,11 @@ processors:
   exclude:
     - 'DetektProgressListener'
 
+complexity:
+  active: true
+  LongParameterList:
+    ignoreDefaultParameters: true
+
 formatting:
   active: true
   MaximumLineLength:

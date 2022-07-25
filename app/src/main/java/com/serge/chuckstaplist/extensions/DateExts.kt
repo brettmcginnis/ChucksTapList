@@ -12,4 +12,4 @@ fun Date.addDays(days: Long): Date = Date(time + TimeUnit.DAYS.toMillis(days))
 fun Date.subtractDays(days: Long): Date = Date(time - TimeUnit.DAYS.toMillis(days))
 
 fun Date.toRFC3339(): String = SimpleDateFormat(RFC3339_FORMAT, Locale.getDefault()).format(this)
-fun Date.toMonthDay(): String = SimpleDateFormat(MONTH_DAY_FORMAT,Locale.getDefault()).format(this)
+fun Date.toMonthDay(): String = SimpleDateFormat(MONTH_DAY_FORMAT, Locale.getDefault()).format(this)
