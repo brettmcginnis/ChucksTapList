@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.serge.chuckstaplist.TapListViewModel.State.StoreInfo
 import com.serge.chuckstaplist.api.ChucksApi
 import com.serge.chuckstaplist.api.TapModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,10 +13,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.android.annotation.KoinViewModel
 
-@HiltViewModel
-class TapListViewModel @Inject constructor(private val api: ChucksApi) : ViewModel() {
+@KoinViewModel
+class TapListViewModel(private val api: ChucksApi) : ViewModel() {
 
     sealed class State {
         object Empty : State()

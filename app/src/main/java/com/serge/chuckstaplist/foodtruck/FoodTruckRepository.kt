@@ -11,14 +11,15 @@ import com.serge.chuckstaplist.extensions.subtractDays
 import com.serge.chuckstaplist.extensions.toMonthDay
 import com.serge.chuckstaplist.extensions.toRFC3339
 import com.serge.chuckstaplist.extensions.toRFC3339Date
+import org.koin.core.annotation.Factory
 import java.util.Date
-import javax.inject.Inject
 
 private const val FOOD_TRUCK_DAYS = 7L
 private const val STATUS_CONFIRMED = "confirmed"
 private const val TAG = "CalendarHelper"
 
-class FoodTruckRepository @Inject constructor(
+@Factory
+class FoodTruckRepository(
     private val googleCalendarApi: GoogleCalendarApi,
     private val calendarApiKey: CalendarApiKey,
 ) {

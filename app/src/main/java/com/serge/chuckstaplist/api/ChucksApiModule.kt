@@ -1,30 +1,24 @@
 package com.serge.chuckstaplist.api
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
+import com.serge.chuckstaplist.BuildConfig
+import com.serge.chuckstaplist.api.calendar.CalendarApiKey
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
-import okhttp3.OkHttpClient
+import org.koin.dsl.module
 import retrofit2.Retrofit
 
 @OptIn(ExperimentalSerializationApi::class)
-@Module
-@InstallIn(ActivityRetainedComponent::class)
-object ChucksApiModule {
-
-    @Provides
-    fun provideChucksApi(retrofit: Retrofit): ChucksApi = retrofit.create(ChucksApi::class.java)
-
-    @Provides
-    fun provideGoogleCalendarApi(okHttpClient: OkHttpClient, json: Json): GoogleCalendarApi =
+val chucksApiModule = module {
+    single { get<Retrofit>().create(ChucksApi::class.java) }
+    single { CalendarApiKey(BuildConfig.CALENDAR_API_KEY) }
+    single {
         Retrofit.Builder()
-            .client(okHttpClient)
+            .client(get())
             .baseUrl("https://www.googleapis.com/calendar/v3/calendars/")
-            .addConverterFactory(json.asConverterFactory(MediaType.get("application/json")))
+            .addConverterFactory(get<Json>().asConverterFactory(MediaType.get("application/json")))
             .build()
             .create(GoogleCalendarApi::class.java)
+    }
 }

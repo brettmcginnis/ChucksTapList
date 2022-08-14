@@ -17,14 +17,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.serge.chuckstaplist.foodtruck.FoodTruckEvent
 import com.serge.chuckstaplist.foodtruck.FoodTruckViewModel
 import com.serge.chuckstaplist.ui.theme.ChucksTapListTheme
 import com.serge.chuckstaplist.ui.theme.DarkGray
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val onTruckEventSelected: (FoodTruckEvent) -> Unit = { truckEvent ->
@@ -42,8 +40,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    val tapListViewModel: TapListViewModel = viewModel()
-                    val foodTruckViewModel: FoodTruckViewModel = viewModel()
+                    val tapListViewModel by viewModel<TapListViewModel>()
+                    val foodTruckViewModel by viewModel<FoodTruckViewModel>()
 
                     var selectedStore by rememberSaveable { mutableStateOf(ChucksStore.GREENWOOD) }
 
