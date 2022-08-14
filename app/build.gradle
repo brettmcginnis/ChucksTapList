@@ -22,8 +22,8 @@ android {
         applicationId "com.serge.chuckstaplist"
         minSdk 26
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "v1.0.1"
 
         buildConfigField "String", "CALENDAR_API_KEY", System.getenv("GoogleApiKey") ?: getLocalProperty("calendar_key")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -62,9 +62,9 @@ dependencies {
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0'
-    implementation 'androidx.activity:activity-compose:1.5.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
+    implementation 'androidx.activity:activity-compose:1.5.1'
     implementation 'com.google.accompanist:accompanist-swiperefresh:0.22.0-rc'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
