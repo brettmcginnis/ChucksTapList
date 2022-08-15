@@ -1,9 +1,12 @@
 package com.serge.chuckstaplist.api
 
-import retrofit2.http.GET
-import retrofit2.http.Query
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import org.koin.core.annotation.Factory
 
-interface ChucksApi {
-    @GET("/data")
-    suspend fun getTapList(@Query("menu") store: String = "GW"): List<TapModel>
+private const val BASE_URL = "https://taplists.web.app"
+
+@Factory
+class ChucksApi(private val client: HttpClient) {
+    suspend fun getTapList(store: String = "GW"): List<TapModel> = client.get("$BASE_URL/data?menu=$store")
 }

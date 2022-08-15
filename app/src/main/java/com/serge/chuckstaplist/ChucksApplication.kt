@@ -1,7 +1,7 @@
 package com.serge.chuckstaplist
 
 import android.app.Application
-import com.serge.chuckstaplist.api.chucksApiModule
+import com.serge.chuckstaplist.api.ChucksApiModule
 import com.serge.chuckstaplist.foodtruck.FoodTruckModule
 import com.serge.chuckstaplist.network.networkModule
 import org.koin.android.ext.koin.androidContext
@@ -15,7 +15,7 @@ class ChucksApplication : Application() {
 
         startKoin {
             androidContext(this@ChucksApplication)
-            modules(networkModule, chucksApiModule, defaultModule, FoodTruckModule().module)
+            modules(defaultModule, networkModule, ChucksApiModule().module, FoodTruckModule().module)
         }
     }
 }

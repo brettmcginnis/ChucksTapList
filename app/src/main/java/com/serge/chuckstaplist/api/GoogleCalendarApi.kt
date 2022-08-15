@@ -1,16 +1,14 @@
 package com.serge.chuckstaplist.api
 
 import com.serge.chuckstaplist.api.calendar.CalendarDto
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import org.koin.core.annotation.Factory
 
-interface GoogleCalendarApi {
-    @GET("{calendarId}/events?singleEvents=true")
-    suspend fun getCalendar(
-        @Path("calendarId") calendarId: String,
-        @Query("key") apiKey: String,
-        @Query("timeMin") timeMin: String,
-        @Query("timeMax") timeMax: String
-    ): CalendarDto
+private const val BASE_URL = "https://www.googleapis.com/calendar/v3/calendars"
+
+@Factory
+class GoogleCalendarApi(private val client: HttpClient) {
+    suspend fun getCalendar(calendarId: String, apiKey: String, timeMin: String, timeMax: String): CalendarDto =
+        client.get("$BASE_URL/$calendarId/events?singleEvents=true&key=$apiKey&timeMin=$timeMin&timeMax=$timeMax")
 }

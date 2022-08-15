@@ -44,3 +44,8 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 
+#Ktor
+-keep class io.ktor.** { *; }
+-keep class kotlinx.coroutines.** { *; }
+-dontwarn org.slf4j.**
+

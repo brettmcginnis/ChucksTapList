@@ -1,14 +1,16 @@
 package com.serge.chuckstaplist.network
 
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import kotlinx.serialization.ExperimentalSerializationApi
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.features.DefaultRequest
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.request.header
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
 import org.koin.dsl.module
-import retrofit2.Retrofit
 
-@OptIn(ExperimentalSerializationApi::class)
 val networkModule = module {
     single {
         Json {
@@ -19,13 +21,10 @@ val networkModule = module {
         }
     }
 
-    single { OkHttpClient.Builder().build() }
-
     single {
-        Retrofit.Builder()
-            .client(get())
-            .baseUrl("https://taplists.web.app/")
-            .addConverterFactory(get<Json>().asConverterFactory(MediaType.get("application/json")))
-            .build()
+        HttpClient(CIO) {
+            install(JsonFeature) { serializer = KotlinxSerializer(get()) }
+            install(DefaultRequest) { header(HttpHeaders.ContentType, ContentType.Application.Json) }
+        }
     }
 }
