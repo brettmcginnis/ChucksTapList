@@ -22,11 +22,13 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.serge.chuckstaplist.api.TapModel
-import com.serge.chuckstaplist.extensions.addDays
 import com.serge.chuckstaplist.foodtruck.FoodTruckEvent
 import com.serge.chuckstaplist.foodtruck.FoodTruckRow
 import com.serge.chuckstaplist.ui.theme.ChucksTapListTheme
-import java.util.Date
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.days
 
 private const val SCROLL_OFFSET_HIDE_HEADER = 50
 
@@ -116,10 +118,11 @@ fun TapListPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
+            val now = Clock.System.now()
             val foodTrucks = listOf(
-                FoodTruckEvent("Grilled Cheese Experience", "http://grilledcheeseseattle.com/", Date()),
-                FoodTruckEvent("Where Ya At Matt", "https://www.whereyaatmatt.com/", Date().addDays(1)),
-                FoodTruckEvent("El Camion", "http://elcamionseattle.com/", Date().addDays(2))
+                FoodTruckEvent("Grilled Cheese Experience", "http://grilledcheeseseattle.com/", now.toLocalDateTime(TimeZone.UTC)),
+                FoodTruckEvent("Where Ya At Matt", "https://www.whereyaatmatt.com/", now.plus(1.days).toLocalDateTime(TimeZone.UTC)),
+                FoodTruckEvent("El Camion", "http://elcamionseattle.com/", now.plus(2.days).toLocalDateTime(TimeZone.UTC))
             ).run(::FoodTruckList)
             listOf(
                 TapModel(1, "Duchesse"),

@@ -2,12 +2,12 @@ package com.serge.chuckstaplist.network
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.features.DefaultRequest
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
@@ -23,7 +23,8 @@ val networkModule = module {
 
     single {
         HttpClient(CIO) {
-            install(JsonFeature) { serializer = KotlinxSerializer(get()) }
+            expectSuccess = true
+            install(ContentNegotiation) { json(get()) }
             install(DefaultRequest) { header(HttpHeaders.ContentType, ContentType.Application.Json) }
         }
     }
