@@ -85,7 +85,7 @@ private fun BoxScope.addStore(store: ChucksStore) {
             .clip(RoundedCornerShape(10.dp)),
         painter = painterResource(id = store.imageResource),
         contentScale = ContentScale.Crop,
-        contentDescription = null
+        contentDescription = store.storeName
     )
     Text(
         store.storeName,
