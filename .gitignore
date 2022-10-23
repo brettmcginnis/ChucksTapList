@@ -9,8 +9,11 @@
 /.idea/misc.xml
 /.idea/deploymentTargetDropDown.xml
 /.idea/assetWizardSettings.xml
+/.idea/jarRepositories.xml
+/.idea/kotlinScripting.xml
 .DS_Store
-/build
+**/build
+**/release
 /captures
 .externalNativeBuild
 .cxx

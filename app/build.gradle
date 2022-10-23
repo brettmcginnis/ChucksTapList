@@ -1,10 +1,7 @@
 plugins {
-    id 'com.android.application'
-    id 'kotlinx-serialization'
-    id 'org.jetbrains.kotlin.android'
-    id "com.google.devtools.ksp" version "$ksp_version"
+    alias libs.plugins.android.application
+    alias libs.plugins.kotlin.android
 }
-apply plugin: 'kotlin-android'
 
 android {
     signingConfigs {
@@ -15,12 +12,12 @@ android {
             keyPassword System.getenv("SigningKeyPassword")
         }
     }
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.serge.chuckstaplist"
         minSdk 26
-        targetSdk 32
+        targetSdk 33
         versionCode 2
         versionName "v1.0.1"
 
@@ -54,7 +51,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion compose_compiler_version
+        kotlinCompilerExtensionVersion libs.versions.compose.compiler.get()
     }
     packagingOptions {
         resources {
@@ -62,39 +59,19 @@ android {
             excludes += '/META-INF/DEPENDENCIES'
         }
     }
+    namespace 'com.serge.chuckstaplist'
 }
 
 dependencies {
-    implementation "androidx.browser:browser:1.4.0"
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
-    implementation 'androidx.activity:activity-compose:1.5.1'
-    implementation 'com.google.accompanist:accompanist-swiperefresh:0.22.0-rc'
-    implementation 'com.squareup:seismic:1.0.3'
-
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
-
-    implementation "io.insert-koin:koin-android:$koin_version"
-    implementation "io.insert-koin:koin-androidx-compose:$koin_version"
-    implementation "io.insert-koin:koin-annotations:$koin_ksp_version"
-    ksp "io.insert-koin:koin-ksp-compiler:$koin_ksp_version"
-
-    implementation 'org.jetbrains.kotlinx:kotlinx-datetime:0.4.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0-RC'
-
-    implementation 'io.ktor:ktor-client-cio:2.1.0'
-    implementation 'io.ktor:ktor-serialization-kotlinx-json:2.1.0'
-    implementation 'io.ktor:ktor-client-content-negotiation:2.1.0'
-
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    implementation project(':kmm')
+    implementation libs.bundles.androidx.compose
+    implementation libs.bundles.androidx.lifecycle
+    implementation libs.androidx.browser
+    implementation libs.androidx.core
+    implementation libs.google.swiperefresh
+    implementation libs.square.seismic
+    implementation libs.koin.compose
+    implementation libs.kotlinx.datetime
 }
 
 def getLocalProperty(String key) {
