@@ -72,6 +72,7 @@ dependencies {
     implementation libs.square.seismic
     implementation libs.koin.compose
     implementation libs.kotlinx.datetime
+    debugImplementation libs.androidx.compose.ui.tooling
 }
 
 def getLocalProperty(String key) {

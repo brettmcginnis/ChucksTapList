@@ -1,10 +1,11 @@
 package com.serge.chuckstaplist
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableState
@@ -16,13 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun ColorFilterHeader(
     colorFilterSet: ColorFilterSet,
     onFilterStateUpdated: (ColorFilterSet) -> Unit,
-    content: @Composable () -> Unit
 ) = Column {
     val colorFilterSetState by rememberUpdatedState(colorFilterSet)
     val onFilterStateUpdatedState by rememberUpdatedState(onFilterStateUpdated)
@@ -32,17 +32,9 @@ fun ColorFilterHeader(
             .run(::ColorFilterSet)
             .run(onFilterStateUpdatedState)
 
-    if (LocalConfiguration.current.isLandscape) {
-        Row(Modifier.fillMaxWidth(), Arrangement.SpaceAround, Alignment.CenterVertically) {
-            content()
-            ColorFilterRow(colorFilterSetState, ::updateColorFilterState)
-        }
-    } else {
-        Box(Modifier.fillMaxWidth(), Alignment.Center) { content() }
-
-        Row(Modifier.fillMaxWidth(), Arrangement.Center, Alignment.CenterVertically) {
-            ColorFilterRow(colorFilterSetState, ::updateColorFilterState)
-        }
+    Row(Modifier.fillMaxWidth(), Arrangement.Center, Alignment.CenterVertically) {
+        Text("Filter:", modifier = Modifier.padding(horizontal = 4.dp), color = Color.White,)
+        ColorFilterRow(colorFilterSetState, ::updateColorFilterState)
     }
 }
 

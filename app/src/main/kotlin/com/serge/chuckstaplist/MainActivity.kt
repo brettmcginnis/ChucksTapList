@@ -35,7 +35,13 @@ class MainActivity : ComponentActivity() {
                     val tapListViewModel by viewModel<TapListViewModel>()
                     val foodTruckViewModel by viewModel<FoodTruckViewModel>()
 
-                    var selectedStore by rememberSaveable { mutableStateOf(ChucksStore.GREENWOOD) }
+                    var selectedStore by rememberSaveable { mutableStateOf<ChucksStore?>(null) }
+
+                    val store = selectedStore
+                    if (store == null) {
+                        StoreSelector(onStoreSelected = { selectedStore = it })
+                        return@Surface
+                    }
 
                     val tapListState by tapListViewModel.state.collectAsState()
                     val taps = (tapListState as? TapListViewModel.State.StoreInfo)
@@ -46,11 +52,11 @@ class MainActivity : ComponentActivity() {
                         ?.foodTrucks.orEmpty().run(::FoodTruckList)
 
                     SideEffect {
-                        if (tapListState is TapListViewModel.State.Empty) tapListViewModel.loadTapList(selectedStore)
-                        if (foodTruckState is FoodTruckViewModel.State.Empty) foodTruckViewModel.loadFoodTrucks(selectedStore)
+                        if (tapListState is TapListViewModel.State.Empty) tapListViewModel.loadTapList(store)
+                        if (foodTruckState is FoodTruckViewModel.State.Empty) foodTruckViewModel.loadFoodTrucks(store)
                     }
 
-                    ListChucksTaps(taps, foodTrucks, selectedStore, tapListState is TapListViewModel.State.Loading, onTruckEventSelected) {
+                    ListChucksTaps(taps, foodTrucks, store, tapListState is TapListViewModel.State.Loading, onTruckEventSelected) {
                         selectedStore = it.also(tapListViewModel::loadTapList).also(foodTruckViewModel::loadFoodTrucks)
                     }
                 }

@@ -8,17 +8,13 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.serge.chuckstaplist.api.TapModel
@@ -29,8 +25,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
-
-private const val SCROLL_OFFSET_HIDE_HEADER = 50
 
 private val TAP_LIST_COLUMNS = listOf(
     TapListColumn(0, "#", .5f, TapListSortState.Type.TAP),
@@ -55,29 +49,11 @@ fun ListChucksTaps(
     onTruckEventSelected: (FoodTruckEvent) -> Unit = {},
     onStoreSelected: (ChucksStore) -> Unit,
 ) = Column {
-    val density = LocalDensity.current
-    val screenHeight = LocalConfiguration.current.screenHeightDp
-
     val (colorFilterState, setColorFilterState) = rememberSaveable(saver = ColorFilterSet.Saver) { mutableStateOf(ColorFilterSet()) }
     val scrollState = rememberLazyListState()
     var sortState by remember { mutableStateOf(TapListSortState(0, true, TAP_LIST_COLUMNS[0].sortType)) }
 
-    val shouldShowTopBar by remember {
-        derivedStateOf {
-            with(scrollState) {
-                val avgItemHeight = with(layoutInfo.visibleItemsInfo) { if (isEmpty()) 0 else sumOf { it.size } / size }
-                val listFitsOnScreen = with(density) { avgItemHeight.toDp() } * layoutInfo.totalItemsCount < screenHeight.dp
-                val firstItemIsVisible = firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset < SCROLL_OFFSET_HIDE_HEADER
-                firstItemIsVisible || listFitsOnScreen
-            }
-        }
-    }
-
-    AnimatedVisibility(shouldShowTopBar) {
-        ColorFilterHeader(colorFilterState, setColorFilterState) {
-            StoreSelector(selectedStore, onStoreSelected)
-        }
-    }
+    ColorFilterHeader(colorFilterState, setColorFilterState)
 
     AnimatedVisibility(foodTrucks.isNotEmpty()) {
         FoodTruckRow(foodTrucks, onTruckEventSelected)

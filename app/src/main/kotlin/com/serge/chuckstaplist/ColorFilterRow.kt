@@ -1,13 +1,13 @@
 package com.serge.chuckstaplist
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
@@ -38,9 +38,8 @@ fun ColorFilterRow(
             .width(50.dp)
             .aspectRatio(1f)
             .padding(8.dp)
-            .background(color)
+            .run { background(color, RoundedCornerShape(if (selectedFilters.contains(color)) 8.dp else 4.dp)) }
             .clickable { onFilterCallbackRemembered(color) }
-            .run { if (selectedFilters.contains(color)) border(4.dp, MaterialTheme.colors.background) else this }
     ) {
         if (selectedFilters.contains(color)) {
             Icon(
