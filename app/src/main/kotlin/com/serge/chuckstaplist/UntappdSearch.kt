@@ -1,18 +1,15 @@
 package com.serge.chuckstaplist
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import androidx.core.content.ContextCompat.startActivity
 import com.serge.chuckstaplist.api.TapModel
+import com.serge.chuckstaplist.chrometabs.showUrlInTab
 
 @Suppress("RegExpRedundantEscape")
 private val bracketRegex = "^.*\\{(.*)\\}$".toRegex()
 
-fun Context.openUntappdSearch(tap: TapModel) {
-    val uri = Uri.parse("https://untappd.com/search?q=${tap.extractSearchQuery()}")
-    startActivity(this, Intent(Intent.ACTION_VIEW, uri), null)
-}
+fun Context.openUntappdSearch(tap: TapModel) =
+    showUrlInTab("https://untappd.com/search?q=${tap.extractSearchQuery()}")
 
 private fun TapModel.extractSearchQuery(): String {
     val sanitizedName = (bracketRegex.find(name)?.groupValues?.get(1) ?: name)
