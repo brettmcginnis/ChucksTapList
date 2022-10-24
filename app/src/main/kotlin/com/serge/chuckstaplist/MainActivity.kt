@@ -2,11 +2,15 @@ package com.serge.chuckstaplist
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +31,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ChucksTapListTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
@@ -36,29 +39,37 @@ class MainActivity : ComponentActivity() {
                     val foodTruckViewModel by viewModel<FoodTruckViewModel>()
 
                     var selectedStore by rememberSaveable { mutableStateOf<ChucksStore?>(null) }
-
-                    val store = selectedStore
-                    if (store == null) {
-                        StoreSelector(onStoreSelected = { selectedStore = it })
-                        return@Surface
-                    }
+                    val isStoreSelected = selectedStore != null
 
                     val tapListState by tapListViewModel.state.collectAsState()
-                    val taps = (tapListState as? TapListViewModel.State.StoreInfo)
-                        ?.taps.orEmpty().run(::TapList)
-
+                    val taps = (tapListState as? TapListViewModel.State.StoreInfo)?.taps.orEmpty().run(::TapList)
                     val foodTruckState by foodTruckViewModel.state.collectAsState()
-                    val foodTrucks = (foodTruckState as? FoodTruckViewModel.State.TruckList)
-                        ?.foodTrucks.orEmpty().run(::FoodTruckList)
+                    val foodTrucks = (foodTruckState as? FoodTruckViewModel.State.TruckList)?.foodTrucks.orEmpty().run(::FoodTruckList)
 
-                    SideEffect {
-                        if (tapListState is TapListViewModel.State.Empty) tapListViewModel.loadTapList(store)
-                        if (foodTruckState is FoodTruckViewModel.State.Empty) foodTruckViewModel.loadFoodTrucks(store)
+                    AnimatedVisibility(
+                        visible = !isStoreSelected,
+                        enter = slideInHorizontally { -it },
+                        exit = slideOutHorizontally { -it }
+                    ) { StoreSelector(onStoreSelected = { selectedStore = it }) }
+
+                    AnimatedVisibility(
+                        visible = isStoreSelected,
+                        enter = slideInHorizontally { it },
+                        exit = slideOutHorizontally { it }
+                    ) {
+                        val store = selectedStore ?: return@AnimatedVisibility
+                        ListChucksTaps(taps, foodTrucks, store, tapListState is TapListViewModel.State.Loading, onTruckEventSelected) {
+                            tapListViewModel.loadTapList(store, force = true)
+                            foodTruckViewModel.loadFoodTrucks(store, force = true)
+                        }
                     }
 
-                    ListChucksTaps(taps, foodTrucks, store, tapListState is TapListViewModel.State.Loading, onTruckEventSelected) {
-                        selectedStore = it.also(tapListViewModel::loadTapList).also(foodTruckViewModel::loadFoodTrucks)
+                    LaunchedEffect(selectedStore) {
+                        selectedStore?.run(tapListViewModel::loadTapList)
+                        selectedStore?.run(foodTruckViewModel::loadFoodTrucks)
                     }
+
+                    BackHandler(selectedStore != null) { selectedStore = null }
                 }
             }
         }

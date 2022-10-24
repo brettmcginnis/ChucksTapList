@@ -18,20 +18,21 @@ class TapListViewModel(private val api: ChucksApi) : PlatformViewModel() {
         object Empty : State()
         object Loading : State()
         data class Error(val throwable: Throwable) : State()
-        data class StoreInfo(val taps: List<TapModel>) : State()
+        data class StoreInfo(val store: ChucksStore, val taps: List<TapModel>) : State()
     }
 
     private val _state = MutableStateFlow<State>(State.Empty)
 
     val state: StateFlow<State> get() = _state
 
-    fun loadTapList(store: ChucksStore) = with(scope) {
+    fun loadTapList(store: ChucksStore, force: Boolean = false) = with(scope) {
+        if (!force && (state.value as? StoreInfo)?.store == store) return@with
         _state.value = State.Loading
         coroutineContext.cancelChildren()
         launch {
             _state.value = flow { emit(api.getTapList(store.menuStr)) }
                 .map { taps -> taps.filter { it.validEntry } }
-                .map<_, State>(::StoreInfo)
+                .map<_, State> { StoreInfo(store, it) }
                 .catch { emit(State.Error(it)) }
                 .first()
         }

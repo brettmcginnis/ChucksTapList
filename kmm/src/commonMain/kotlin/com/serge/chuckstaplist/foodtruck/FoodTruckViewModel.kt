@@ -18,19 +18,20 @@ class FoodTruckViewModel(private val foodTruckRepository: FoodTruckRepository) :
         object Empty : State()
         object Loading : State()
         data class Error(val throwable: Throwable) : State()
-        data class TruckList(val foodTrucks: List<FoodTruckEvent>) : State()
+        data class TruckList(val store: ChucksStore, val foodTrucks: List<FoodTruckEvent>) : State()
     }
 
     private val _state = MutableStateFlow<State>(State.Empty)
 
     val state: StateFlow<State> get() = _state
 
-    fun loadFoodTrucks(store: ChucksStore) = with(scope) {
+    fun loadFoodTrucks(store: ChucksStore, force: Boolean = false) = with(scope) {
+        if (!force && (state.value as? TruckList)?.store == store) return@with
         _state.value = State.Loading
         coroutineContext.cancelChildren()
         launch {
             _state.value = flow { emit(foodTruckRepository.getFoodTrucks(store.calendarId)) }
-                .map<_, State>(::TruckList)
+                .map<_, State> { TruckList(store, it) }
                 .catch { emit(State.Error(it)) }
                 .first()
         }

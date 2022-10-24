@@ -1,10 +1,7 @@
 package com.serge.chuckstaplist
 
-import android.hardware.SensorManager
-import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -19,92 +16,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.getSystemService
 import com.serge.chuckstaplist.api.TapModel
-import com.serge.chuckstaplist.effects.ScrollToEffect
-import com.serge.chuckstaplist.ui.theme.DarkGray
-import com.serge.chuckstaplist.ui.theme.Gray
-import com.serge.chuckstaplist.ui.theme.Green
-import com.serge.chuckstaplist.ui.theme.Orange
-import com.serge.chuckstaplist.ui.theme.Pink
-import com.serge.chuckstaplist.ui.theme.Red
-import com.serge.chuckstaplist.ui.theme.Yellow
-import kotlin.random.Random
-
-private const val MIN_MS_BETWEEN_SHAKES = 1_000L
-private const val SUB_ANIMATION_DURATION = 200
-private const val NUM_COLOR_CYCLE_REPETITIONS = 3
-
-@Immutable
-class ExpandedTaps(expandedTaps: Set<Int> = emptySet()) : Set<Int> by expandedTaps {
-    companion object {
-        val Saver = Saver<MutableState<ExpandedTaps>, Set<Int>>(
-            save = { state -> state.value.toSet() },
-            restore = { taps -> mutableStateOf(ExpandedTaps(taps)) },
-        )
-    }
-}
-
-@Composable
-fun LazyTapList(
-    list: TapList,
-    state: LazyListState = rememberLazyListState(),
-    expandedItems: ExpandedTaps,
-    colWeights: TapListColumns.Weights,
-    onClick: (TapModel) -> Unit
-) {
-    val sensorManager = LocalContext.current.getSystemService<SensorManager>()
-    var highlightedIndex by rememberSaveable(list.size) { mutableStateOf(-1) }
-    val pickRandomIndex by rememberUpdatedState { highlightedIndex = if (list.isEmpty()) -1 else Random.nextInt(list.size) }
-    LaunchedEffect(sensorManager) { sensorManager?.shakesFlow(MIN_MS_BETWEEN_SHAKES)?.collect { pickRandomIndex() } }
-
-    val animatableColor = remember(highlightedIndex) { Animatable(Gray) }
-    ScrollToEffect(state, highlightedIndex) {
-        val colorsToAnimate = listOf(Red, Orange, Yellow, Green, Pink)
-        repeat(NUM_COLOR_CYCLE_REPETITIONS) {
-            colorsToAnimate.forEach { color -> animatableColor.animateTo(color, tween(SUB_ANIMATION_DURATION)) }
-        }
-        animatableColor.animateTo(Gray, tween(SUB_ANIMATION_DURATION))
-        highlightedIndex = -1 // reset highlighted index after animation is done
-    }
-
-    LazyColumn(Modifier.fillMaxSize(), state) {
-        list.forEachIndexed { index, tap ->
-            val bgColor = if (index % 2 == 0) DarkGray else Color.Black
-            val borderColor = if (index == highlightedIndex) animatableColor.value else Gray
-            tapItem(tap, expandedItems.contains(tap.tapNumber), bgColor, borderColor, colWeights, onClick)
-        }
-    }
-}
 
 @Suppress("LongParameterList")
 @OptIn(ExperimentalAnimationApi::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
-private fun LazyListScope.tapItem(
+internal fun LazyListScope.tapItem(
     tap: TapModel,
     isExpanded: Boolean = false,
     bgColor: Color,

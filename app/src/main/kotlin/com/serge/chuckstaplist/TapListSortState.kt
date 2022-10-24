@@ -1,13 +1,16 @@
 package com.serge.chuckstaplist
 
+import android.os.Parcelable
 import com.serge.chuckstaplist.api.TapModel
+import kotlinx.parcelize.Parcelize
 import kotlin.Comparator
 
+@Parcelize
 data class TapListSortState(
     val columnIndex: Int = -1,
     val isAscending: Boolean = true,
     val type: Type = Type.TAP,
-) : Comparator<TapModel> {
+) : Comparator<TapModel>, Parcelable {
 
     enum class Type { TAP, NAME, PRICE, ORIGIN, ABV, COLOR }
 

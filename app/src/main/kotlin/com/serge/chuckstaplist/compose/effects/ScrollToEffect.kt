@@ -1,4 +1,4 @@
-package com.serge.chuckstaplist.effects
+package com.serge.chuckstaplist.compose.effects
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
