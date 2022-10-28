@@ -12,7 +12,7 @@ fun ScrollToEffect(state: LazyListState, itemIndex: Int, onScroll: suspend () ->
     val rememberOnScroll by rememberUpdatedState(onScroll)
     LaunchedEffect(itemIndex) {
         if (itemIndex < 0) return@LaunchedEffect
-        launch { state.animateScrollToItem(itemIndex, -(state.layoutInfo.viewportSize.height / 2)) }
+        launch { state.animateScrollToItem(itemIndex) }
         rememberOnScroll()
     }
 }

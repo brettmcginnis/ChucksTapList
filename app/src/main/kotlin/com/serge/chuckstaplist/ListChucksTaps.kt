@@ -83,11 +83,17 @@ fun ListChucksTaps(
     val (colorFilterState, setColorFilterState) = rememberSaveable(saver = ColorFilterSet.Saver) { mutableStateOf(ColorFilterSet()) }
     val scrollState = rememberLazyListState()
     var sortState by rememberSaveable { mutableStateOf(TapListSortState(0, true, TAP_LIST_COLUMNS[0].sortType)) }
-    var expandedItems by rememberSaveable(saver = ExpandedTaps.Saver) { mutableStateOf(ExpandedTaps()) }
+    val filteredTaps = taps.takeUnless { isLoading }
+        ?.filter { if (colorFilterState.isEmpty()) true else it.colorValue in colorFilterState }
+        ?.sortedWith(sortState)
+        .orEmpty()
+        .run(::TapList)
 
-    val highlightedIndexState = rememberSaveable(taps.size) { mutableStateOf(-1) }
+    var expandedItems by rememberSaveable(filteredTaps.size, saver = ExpandedTaps.Saver) { mutableStateOf(ExpandedTaps()) }
+    val highlightedIndexState = rememberSaveable(filteredTaps.size) { mutableStateOf(-1) }
     val animatableColor = remember(highlightedIndexState.value) { Animatable(Gray) }
-    ShakeScrollToRandomTap(taps, scrollState, highlightedIndexState) {
+
+    ShakeScrollToRandomTap(filteredTaps, scrollState, highlightedIndexState) {
         val colorsToAnimate = listOf(Red, Orange, Yellow, Green, Pink)
         repeat(NUM_COLOR_CYCLE_REPETITIONS) {
             colorsToAnimate.forEach { color -> animatableColor.animateTo(color, tween(SUB_ANIMATION_DURATION)) }
@@ -95,10 +101,7 @@ fun ListChucksTaps(
         animatableColor.animateTo(Gray, tween(SUB_ANIMATION_DURATION))
     }
 
-    SwipeRefresh(
-        rememberSwipeRefreshState(isLoading),
-        onRefresh = onRefresh,
-    ) {
+    SwipeRefresh(rememberSwipeRefreshState(isLoading), onRefresh = onRefresh) {
         LazyColumn(Modifier.fillMaxSize(), scrollState) {
             item {
                 Text(
@@ -121,19 +124,15 @@ fun ListChucksTaps(
                     }
                 }
             }
-            taps.takeUnless { isLoading }
-                ?.filter { if (colorFilterState.isEmpty()) true else it.colorValue in colorFilterState }
-                ?.sortedWith(sortState)
-                .orEmpty()
-                .run(::TapList)
-                .forEachIndexed { index, tap ->
-                    val bgColor = if (index % 2 == 0) DarkGray else Color.Black
-                    val borderColor = if (index == highlightedIndexState.value) animatableColor.value else Gray
-                    tapItem(tap, expandedItems.contains(tap.tapNumber), bgColor, borderColor, TAP_LIST_COLUMNS.weights) { beer ->
-                        val tapNumber = beer.tapNumber
-                        expandedItems = with(expandedItems) { ExpandedTaps(if (contains(tapNumber)) minus(tapNumber) else plus(tapNumber)) }
-                    }
+
+            filteredTaps.forEachIndexed { index, tap ->
+                val bgColor = if (index % 2 == 0) DarkGray else Color.Black
+                val borderColor = if (index == highlightedIndexState.value) animatableColor.value else Gray
+                tapItem(tap, expandedItems.contains(tap.tapNumber), bgColor, borderColor, TAP_LIST_COLUMNS.weights) { beer ->
+                    val tapNumber = beer.tapNumber
+                    expandedItems = with(expandedItems) { ExpandedTaps(if (contains(tapNumber)) minus(tapNumber) else plus(tapNumber)) }
                 }
+            }
         }
     }
 }
