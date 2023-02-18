@@ -18,6 +18,7 @@ val networkModule = module {
             coerceInputValues = true
             encodeDefaults = true
             isLenient = true
+            allowSpecialFloatingPointValues = true
         }
     }
 
