@@ -36,6 +36,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.serge.chuckstaplist.api.TapModel
+import com.serge.chuckstaplist.api.price
+import com.serge.chuckstaplist.api.serving
 
 private const val FONT_SIZE_CHANGE_MULTIPLIER = .95f
 private const val UNKNOWN_VALUE = "???"
@@ -74,7 +76,7 @@ internal fun LazyListScope.tapItem(
                     .weight(1f)
                 Row(Modifier.fillMaxWidth(), Arrangement.Center) {
                     Text("Type: ${tap.type ?: "Other"}", textModifier, textAlign = TextAlign.End)
-                    Text("Serving Size: ${tap.serving ?: UNKNOWN_VALUE}", textModifier, textAlign = TextAlign.Start)
+                    Text("Serving Size: ${tap.serving}", textModifier, textAlign = TextAlign.Start)
                 }
                 Row(Modifier.fillMaxWidth(), Arrangement.Center) {
                     if (tap.growlerCost > 0) {

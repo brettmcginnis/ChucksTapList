@@ -3,6 +3,7 @@ package com.serge.chuckstaplist
 import com.serge.chuckstaplist.TapListViewModel.State.StoreInfo
 import com.serge.chuckstaplist.api.ChucksApi
 import com.serge.chuckstaplist.api.TapModel
+import com.serge.chuckstaplist.api.price
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

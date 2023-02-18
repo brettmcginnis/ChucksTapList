@@ -2,6 +2,7 @@ package com.serge.chuckstaplist
 
 import android.os.Parcelable
 import com.serge.chuckstaplist.api.TapModel
+import com.serge.chuckstaplist.api.price
 import kotlinx.parcelize.Parcelize
 import kotlin.Comparator
 
