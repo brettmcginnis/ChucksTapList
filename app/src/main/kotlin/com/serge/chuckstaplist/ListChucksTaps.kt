@@ -5,14 +5,19 @@ import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableState
@@ -22,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -32,8 +38,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.core.content.getSystemService
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.serge.chuckstaplist.api.TapModel
 import com.serge.chuckstaplist.compose.effects.ScrollToEffect
 import com.serge.chuckstaplist.compose.whileResumed
@@ -70,7 +74,7 @@ class TapList(taps: List<TapModel>) : List<TapModel> by taps
 @Immutable
 class FoodTruckList(foodTrucks: List<FoodTruckEvent>) : List<FoodTruckEvent> by foodTrucks
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun ListChucksTaps(
     taps: TapList,
@@ -101,7 +105,12 @@ fun ListChucksTaps(
         animatableColor.animateTo(Gray, tween(SUB_ANIMATION_DURATION))
     }
 
-    SwipeRefresh(rememberSwipeRefreshState(isLoading), onRefresh = onRefresh) {
+    val refreshState = rememberPullRefreshState(refreshing = isLoading, onRefresh = onRefresh)
+
+    Box(
+        Modifier
+            .fillMaxSize()
+            .pullRefresh(refreshState)) {
         LazyColumn(Modifier.fillMaxSize(), scrollState) {
             item {
                 Text(
@@ -134,6 +143,8 @@ fun ListChucksTaps(
                 }
             }
         }
+
+        PullRefreshIndicator(refreshing = isLoading , state = refreshState, Modifier.align(Alignment.TopCenter))
     }
 }
 

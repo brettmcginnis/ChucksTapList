@@ -45,7 +45,6 @@ kotlin {
                 implementation(libs.androidx.lifecycle.viewmodel.ktx)
             }
         }
-        val androidTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -75,4 +74,8 @@ android {
         targetSdk = 33
     }
     namespace = "com.serge.chuckstaplist.kmm"
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 }
