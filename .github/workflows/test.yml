@@ -1,0 +1,21 @@
+name: Tests
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: docker
+#    container: ghcr.io/brettmcginnis/android-sdk/pr:13358275855
+    steps:
+      - uses: actions/checkout@v4
+      - run: >-
+          docker run
+          -v ${{ github.workspace }}:${{ github.workspace }}
+          --workdir ${{ github.workspace }}
+          -e GoogleApiKey
+          androidsdk/android-31
+          sh -c "./gradlew testDebugUnitTest --stacktrace"
+        env:
+          GoogleApiKey: ${{ secrets.PROD_GOOGLE_MAPS_API_KEY }}
