@@ -9,12 +9,8 @@ jobs:
     container: docker
     steps:
       - uses: actions/checkout@v4
-      - run: >-
-          docker run
-          -v ${{ github.workspace }}:${{ github.workspace }}
-          --workdir ${{ github.workspace }}
-          -e GoogleApiKey
-          ghcr.io/brettmcginnis/android-sdk/pr:13358275855
-          sh -c "./gradlew testDebugUnitTest --stacktrace"
+      - uses: ./.github/actions/gradle
+        with:
+          command: testDebugUnitTest
         env:
           GoogleApiKey: ${{ secrets.PROD_GOOGLE_MAPS_API_KEY }}

@@ -1,0 +1,36 @@
+name: Gradle Wrapper
+description: Action for Gradle Commands
+
+inputs:
+  command:
+    description: 'Gradle Command to Run [eg tasks]'
+    required: true
+    default: 'tasks'
+
+
+outputs:
+  exit_code:
+    description: >-
+      process exit code
+      can be used to run downstream steps conditionally
+    value: ${{ steps.gradle.outputs.exit_code }}
+
+runs:
+  using: "composite"
+  steps:
+    - run: >-
+        docker run
+        -v ${{ github.workspace }}:${{ github.workspace }}
+        --workdir ${{ github.workspace }}
+        -e CI
+        -e GoogleApiKey
+        androidsdk/android-31
+        sh -c "git config --global --add safe.directory '*' &&
+        ./gradlew ${{ inputs.command }}
+        -Dorg.gradle.jvmargs='-XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport'
+        --gradle-user-home ${{ github.workspace }}/gradleHome
+        --stacktrace"
+
+        echo "exit_code=$?" >> $GITHUB_OUTPUT
+      shell: sh
+      id: gradle
