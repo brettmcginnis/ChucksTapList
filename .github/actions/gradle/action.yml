@@ -31,6 +31,8 @@ runs:
         sh -c "git config --global --add safe.directory '*' &&
         ./gradlew ${{ inputs.command }}
         -Dorg.gradle.jvmargs='-XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport'
+        -Dorg.gradle.daemon=false
+        -Dorg.gradle.parallel=true
         --gradle-user-home ${{ github.workspace }}/gradleHome
         --stacktrace"
 

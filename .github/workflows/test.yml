@@ -24,6 +24,6 @@ jobs:
         with:
           name: testDebugUnitTest-junit-xml
           path: |
-            app/build/reports/tests/**/*
-            app/build/test-results/**/*.xml
+            app/**/reports/tests/**/*
+            app/**/test-results/**/*.xml
           if-no-files-found: error
