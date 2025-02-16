@@ -1,0 +1,21 @@
+name: Pull Request
+
+on:
+  pull_request:
+
+jobs:
+  analysis:
+    uses: ./.github/workflows/analysis.yml
+    secrets: inherit
+
+  archive:
+    uses: ./.github/workflows/archive.yml
+    secrets: inherit
+
+  test:
+    uses: ./.github/workflows/test.yml
+    secrets: inherit
+    permissions:
+      contents: read
+      checks: write
+      id-token: write

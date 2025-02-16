@@ -1,0 +1,27 @@
+name: Archive
+
+on:
+  workflow_call:
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    container: docker
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "$ChucksSigningKey" | base64 -d > $(pwd)/chuck_signing_key.jks
+        env:
+          ChucksSigningKey: ${{ secrets.CHUCKS_SIGNING_KEY }}
+      - uses: ./.github/actions/gradle
+        with:
+          command: assemble
+        env:
+          GoogleApiKey: ${{ secrets.PROD_GOOGLE_MAPS_API_KEY }}
+          SigningKeyAlias: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SigningKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+      - uses: actions/upload-artifact@v4
+        if: ${{ ! cancelled() }}
+        with:
+          name: apk
+          path: ./**/outputs/**/*apk
+          if-no-files-found: error
