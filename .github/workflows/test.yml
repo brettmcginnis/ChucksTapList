@@ -14,3 +14,16 @@ jobs:
           command: testDebugUnitTest
         env:
           GoogleApiKey: ${{ secrets.PROD_GOOGLE_MAPS_API_KEY }}
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v5
+        if: ${{ ! cancelled() }}
+        with:
+          report_paths: '**/app/build/test-results/**/*.xml'
+      - uses: actions/upload-artifact@v4
+        if: ${{ ! cancelled() }}
+        with:
+          name: testDebugUnitTest-junit-xml
+          path: |
+            app/build/reports/tests/**/*
+            app/build/test-results/**/*.xml
+          if-no-files-found: error
