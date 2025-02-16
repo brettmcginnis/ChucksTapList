@@ -24,6 +24,9 @@ runs:
         --workdir ${{ github.workspace }}
         -e CI
         -e GoogleApiKey
+        -e ChucksSigningKey
+        -e SigningKeyAlias
+        -e SigningKeyPassword
         androidsdk/android-31
         sh -c "git config --global --add safe.directory '*' &&
         ./gradlew ${{ inputs.command }}
