@@ -2,7 +2,6 @@ plugins {
     alias libs.plugins.android.application
     alias libs.plugins.kotlin.android
     alias libs.plugins.kotlin.compose
-    id 'kotlin-parcelize'
 }
 
 android {
@@ -59,11 +58,7 @@ dependencies {
     implementation platform(libs.androidx.compose.bom)
     implementation libs.bundles.androidx.compose
     implementation libs.bundles.androidx.lifecycle
-    implementation libs.androidx.browser
-    implementation libs.androidx.core
-    implementation libs.square.seismic
     implementation libs.koin.compose
-    implementation libs.kotlinx.datetime
     debugImplementation libs.androidx.compose.ui.tooling
 }
 

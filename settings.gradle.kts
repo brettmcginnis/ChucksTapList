@@ -12,6 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Chuck's Tap List"
+rootProject.name = "ChucksTapList"
 include(":app")
 include(":kmm")

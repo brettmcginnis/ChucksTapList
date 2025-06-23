@@ -5,6 +5,9 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.ksp)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.kotlin.compose)
+    id("kotlin-parcelize")
 }
 
 kotlin {
@@ -37,8 +40,13 @@ kotlin {
                 implementation(libs.kotlinx.coroutines)
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.kotlinx.serialization)
+                implementation(libs.kotlinx.collections.immutable)
                 implementation(libs.koin.core)
+                implementation(libs.koin.compose.multiplatform)
                 implementation(libs.bundles.ktor)
+                implementation(libs.bundles.compose.multiplatform)
+                implementation(libs.bundles.circuit)
+                implementation(compose.components.resources)
             }
         }
         val commonTest by getting {
@@ -50,7 +58,9 @@ kotlin {
             dependencies {
                 implementation(libs.koin.android)
                 implementation(libs.androidx.lifecycle.runtime)
-                implementation(libs.androidx.lifecycle.viewmodel.ktx)
+                implementation(libs.androidx.activity)
+                implementation(libs.androidx.browser)
+                implementation(libs.square.seismic)
             }
         }
         val androidUnitTest by getting
@@ -78,6 +88,7 @@ kotlin {
 android {
     compileSdk = 35
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    sourceSets["main"].res.srcDirs("src/androidMain/res")
     defaultConfig {
         minSdk = 26
     }

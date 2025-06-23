@@ -1,13 +1,15 @@
 [versions]
-gradle = "8.7.3"
+gradle = "8.10.1"
 kotlin = "2.0.21"
 compose-bom = "2025.06.01"
+compose-multiplatform = "1.8.2"
 coroutines = "1.9.0"
 detekt = "1.23.7"
 ksp = "2.0.21-1.0.25"
 koin = "4.0.0"
 ktor = "3.0.1"
 lifecycle = "2.9.1"
+circuit = "0.28.1"
 
 [libraries]
 androidx-activity = { module = "androidx.activity:activity-compose", version = "1.10.1" }
@@ -21,15 +23,16 @@ androidx-compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
-androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-compose-multiplatform = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.1" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.7.3" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.8" }
 
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
@@ -37,10 +40,24 @@ ktor-serialization = { module = "io.ktor:ktor-client-content-negotiation", versi
 
 square-seismic = { module = "com.squareup:seismic", version = "1.0.3" }
 
+compose-multiplatform-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+compose-multiplatform-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+compose-multiplatform-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-multiplatform" }
+compose-multiplatform-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
+compose-multiplatform-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-multiplatform" }
+compose-multiplatform-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+
+circuit-foundation = { module = "com.slack.circuit:circuit-foundation", version.ref = "circuit" }
+circuit-runtime = { module = "com.slack.circuit:circuit-runtime", version.ref = "circuit" }
+circuit-runtime-presenter = { module = "com.slack.circuit:circuit-runtime-presenter", version.ref = "circuit" }
+circuit-runtime-ui = { module = "com.slack.circuit:circuit-runtime-ui", version.ref = "circuit" }
+
 [bundles]
 androidx-compose = ["androidx-activity", "androidx-compose-material", "androidx-compose-material-icons", "androidx-compose-ui", "androidx-compose-ui-preview"]
-androidx-lifecycle = ["androidx-lifecycle-runtime", "androidx-lifecycle-runtime-compose", "androidx-lifecycle-viewmodel"]
+androidx-lifecycle = ["androidx-lifecycle-runtime", "androidx-lifecycle-runtime-compose"]
 ktor = ["ktor-client-cio", "ktor-client-content-negotiation", "ktor-serialization"]
+compose-multiplatform = ["compose-multiplatform-runtime", "compose-multiplatform-foundation", "compose-multiplatform-material", "compose-multiplatform-ui"]
+circuit = ["circuit-foundation", "circuit-runtime", "circuit-runtime-presenter", "circuit-runtime-ui"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }
@@ -51,4 +68,5 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 
