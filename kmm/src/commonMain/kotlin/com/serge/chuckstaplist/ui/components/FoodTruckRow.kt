@@ -16,11 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.serge.chuckstaplist.foodtruck.FoodTruckEvent
+import com.serge.chuckstaplist.domain.FoodTruckEvent
 import com.serge.chuckstaplist.ui.models.FoodTruckList
 import com.serge.chuckstaplist.ui.theme.Orange
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FoodTruckRow(
     foodTrucks: FoodTruckList,

@@ -3,7 +3,7 @@ gradle = "8.10.1"
 kotlin = "2.0.21"
 compose-bom = "2025.06.01"
 compose-multiplatform = "1.8.2"
-coroutines = "1.9.0"
+coroutines = "1.10.2"
 detekt = "1.23.7"
 ksp = "2.0.21-1.0.25"
 koin = "4.0.0"
@@ -51,13 +51,14 @@ circuit-foundation = { module = "com.slack.circuit:circuit-foundation", version.
 circuit-runtime = { module = "com.slack.circuit:circuit-runtime", version.ref = "circuit" }
 circuit-runtime-presenter = { module = "com.slack.circuit:circuit-runtime-presenter", version.ref = "circuit" }
 circuit-runtime-ui = { module = "com.slack.circuit:circuit-runtime-ui", version.ref = "circuit" }
+circuitx-effects = { module = "com.slack.circuit:circuitx-effects", version.ref = "circuit" }
 
 [bundles]
 androidx-compose = ["androidx-activity", "androidx-compose-material", "androidx-compose-material-icons", "androidx-compose-ui", "androidx-compose-ui-preview"]
 androidx-lifecycle = ["androidx-lifecycle-runtime", "androidx-lifecycle-runtime-compose"]
 ktor = ["ktor-client-cio", "ktor-client-content-negotiation", "ktor-serialization"]
 compose-multiplatform = ["compose-multiplatform-runtime", "compose-multiplatform-foundation", "compose-multiplatform-material", "compose-multiplatform-ui"]
-circuit = ["circuit-foundation", "circuit-runtime", "circuit-runtime-presenter", "circuit-runtime-ui"]
+circuit = ["circuit-foundation", "circuit-runtime", "circuit-runtime-presenter", "circuit-runtime-ui", "circuitx-effects"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }

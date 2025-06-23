@@ -1,4 +1,4 @@
-package com.serge.chuckstaplist.foodtruck
+package com.serge.chuckstaplist.domain
 
 import kotlinx.datetime.LocalDateTime
 

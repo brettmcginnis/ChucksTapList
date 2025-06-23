@@ -1,5 +1,5 @@
 package com.serge.chuckstaplist.platform
 
-import org.koin.dsl.module
+import org.koin.core.module.Module
 
-expect val platformModule: org.koin.core.module.Module
+internal expect val chucksPlatformModule: Module

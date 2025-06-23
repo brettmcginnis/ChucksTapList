@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -41,11 +40,10 @@ import com.serge.chuckstaplist.ui.extensions.colorValue
 import com.serge.chuckstaplist.ui.extensions.info
 import com.serge.chuckstaplist.ui.extensions.servingSizeFormatted
 import com.serge.chuckstaplist.ui.models.TapListColumns
-import com.serge.chuckstaplist.ui.platform.TapLongClickHandler
+import kotlin.math.roundToInt
 
 private const val FONT_SIZE_CHANGE_MULTIPLIER = .95f
 
-@OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.tapItem(
     tap: TapModel,
     isExpanded: Boolean = false,
@@ -55,8 +53,6 @@ fun LazyListScope.tapItem(
     onClick: (TapModel) -> Unit,
     onLongClick: (TapModel) -> Unit = { }
 ) = item {
-    val longClickHandler = TapLongClickHandler(tap) { onLongClick(tap) }
-    
     Column(
         Modifier
             .fillMaxWidth()
@@ -64,7 +60,7 @@ fun LazyListScope.tapItem(
             .padding(2.dp)
             .border(2.dp, borderColor)
             .padding(2.dp)
-            .combinedClickable(onLongClick = longClickHandler) { onClick(tap) }
+            .combinedClickable(onLongClick = { onLongClick(tap) }) { onClick(tap) }
             .animateItem()
     ) {
         Row(Modifier, Arrangement.Center, Alignment.CenterVertically) {
@@ -86,7 +82,7 @@ fun LazyListScope.tapItem(
                 Row(Modifier.fillMaxWidth(), Arrangement.Center) {
                     if (tap.showGrowler) {
                         Text(
-                            text = "Growler: ${"$%.2f".format(tap.growlerCost)}",
+                            text = "Growler: ${tap.growlerCost.roundToDecimals()}",
                             textModifier,
                             color = Color.LightGray,
                             textAlign = TextAlign.End
@@ -94,7 +90,7 @@ fun LazyListScope.tapItem(
                     }
                     if (tap.showCrowler) {
                         Text(
-                            text = "Crowler: ${"$%.2f".format(tap.crowlerCost)}",
+                            text = "Crowler: ${tap.crowlerCost.roundToDecimals()}",
                             textModifier,
                             color = Color.LightGray,
                             textAlign = TextAlign.Start
@@ -102,12 +98,29 @@ fun LazyListScope.tapItem(
                     }
                 }
                 Row(Modifier.fillMaxWidth(), Arrangement.Center) {
-                    Text("Markup / Pour: ${"$%.2f".format(tap.markupPerPour)}", textModifier, color = Color.LightGray, textAlign = TextAlign.End)
-                    Text("Markup / Oz: ${"$%.2f".format(tap.markupPerOz)}", textModifier, color = Color.LightGray, textAlign = TextAlign.Start)
+                    Text(
+                        "Markup / Pour: ${tap.markupPerPour.roundToDecimals()}",
+                        textModifier,
+                        color = Color.LightGray,
+                        textAlign = TextAlign.End
+                    )
+                    Text(
+                        "Markup / Oz: ${tap.markupPerOz.roundToDecimals()}",
+                        textModifier,
+                        color = Color.LightGray,
+                        textAlign = TextAlign.Start
+                    )
                 }
             }
         }
     }
+}
+
+private fun Double.roundToDecimals(decimals: Int = 2): Float {
+    var dotAt = 1
+    repeat(decimals) { dotAt *= 10 }
+    val roundedValue = (this * dotAt).roundToInt()
+    return (roundedValue / dotAt) + (roundedValue % dotAt).toFloat() / dotAt
 }
 
 @Composable

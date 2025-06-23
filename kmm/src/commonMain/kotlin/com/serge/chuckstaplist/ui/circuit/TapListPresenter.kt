@@ -3,30 +3,39 @@ package com.serge.chuckstaplist.ui.circuit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlin.random.Random
 import com.serge.chuckstaplist.api.TapModel
 import com.serge.chuckstaplist.domain.usecases.GetFoodTrucksUseCase
 import com.serge.chuckstaplist.domain.usecases.GetTapListUseCase
-import com.serge.chuckstaplist.foodtruck.FoodTruckEvent
+import com.serge.chuckstaplist.domain.FoodTruckEvent
 import com.serge.chuckstaplist.platform.ExternalBrowser
 import com.serge.chuckstaplist.platform.ShakeDetector
+import com.serge.chuckstaplist.ui.platform.BackHandler
+import com.serge.chuckstaplist.ui.extensions.colorValue
+import com.serge.chuckstaplist.ui.models.ColorFilterSet
+import com.serge.chuckstaplist.ui.models.ExpandedTaps
+import com.serge.chuckstaplist.ui.models.TapList
+import com.serge.chuckstaplist.ui.models.TapListSortState
+import com.serge.chuckstaplist.ui.models.TAP_LIST_COLUMNS
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.serge.chuckstaplist.domain.usecases.UseCaseResult
+import com.slack.circuit.retained.produceRetainedState
+import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuitx.effects.LaunchedImpressionEffect
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
-private const val SHAKE_DEBOUNCE_MS = 1000L
 private const val COLOR_CYCLE_DURATION_MS = 200L
+private const val SHAKE_HIGHLIGHT_DURATION_MS = 3000L
 
 class TapListPresenter(
     private val screen: TapListScreen,
@@ -39,133 +48,145 @@ class TapListPresenter(
 
     @Composable
     override fun present(): TapListUiState {
-        var isRefreshing by remember { mutableStateOf(false) }
-        var tapListResult by remember { mutableStateOf<GetTapListUseCase.Result<List<TapModel>>?>(null) }
-        var foodTruckResult by remember { mutableStateOf<GetFoodTrucksUseCase.Result<List<FoodTruckEvent>>?>(null) }
+        BackHandler(enabled = true) { navigator.pop() }
 
-        val loadData = {
-            isRefreshing = true
-        }
-
-        LaunchedEffect(screen.store, isRefreshing) {
-            if (tapListResult == null || isRefreshing) {
+        var isRefreshing by rememberRetained { mutableStateOf(true) }
+        val tapListResult by produceRetainedState<UseCaseResult<List<TapModel>>?>(
+            initialValue = null,
+            key1 = screen.store,
+            key2 = isRefreshing
+        ) {
+            if(isRefreshing) {
                 getTapListUseCase(screen.store).collect { result ->
-                    tapListResult = result
-                    if (result !is GetTapListUseCase.Result.Loading) {
+                    value = result
+                    if (result !is UseCaseResult.Loading) {
                         isRefreshing = false
                     }
                 }
             }
         }
-
-        LaunchedEffect(screen.store, isRefreshing) {
-            if (foodTruckResult == null || isRefreshing) {
-                getFoodTrucksUseCase(screen.store).collect { result ->
-                    foodTruckResult = result
-                }
-            }
+        val foodTruckResult by produceRetainedState<UseCaseResult<List<FoodTruckEvent>>?>(
+            initialValue = null,
+            key1 = screen.store,
+            key2 = isRefreshing
+        ) { if(isRefreshing) getFoodTrucksUseCase(screen.store).collect { value = it } }
+        
+        // UI state management moved from UI to presenter
+        var colorFilterState by rememberSaveable(saver = ColorFilterSet.Saver) {
+            mutableStateOf(ColorFilterSet())
         }
+        var sortState by rememberSaveable(saver = TapListSortState.Saver) { 
+            mutableStateOf(TapListSortState(0, true, TAP_LIST_COLUMNS[0].sortType)) 
+        }
+        var expandedItems by rememberSaveable(saver = ExpandedTaps.Saver) { mutableStateOf(ExpandedTaps()) }
 
         // State for random beer highlighting
-        var highlightedTapIndex by remember { mutableStateOf(-1) }
-        var currentColorIndex by remember { mutableStateOf(0) }
-        var shouldScrollToHighlighted by remember { mutableStateOf(false) }
-        var animationJob by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
-        
-        val coroutineScope = rememberCoroutineScope()
-        
-        val onShakeDetected = { filteredTaps: List<TapModel> ->
-            if (filteredTaps.isNotEmpty()) {
-                // Cancel any existing animation
-                animationJob?.cancel()
-                
-                // Start new animation with filtered taps
-                highlightedTapIndex = Random.nextInt(filteredTaps.size)
-                shouldScrollToHighlighted = true
-                currentColorIndex = 0
-                
-                animationJob = coroutineScope.launch {
-                    // Cycle through colors for 3 seconds (15 cycles * 200ms each)
-                    repeat(15) {
-                        currentColorIndex = it % 5 // 5 colors in the animation
-                        delay(COLOR_CYCLE_DURATION_MS)
-                    }
-                    
-                    // Reset after animation
-                    highlightedTapIndex = -1
-                    shouldScrollToHighlighted = false
-                    animationJob = null
-                }
-            }
-        }
-        
-        val taps = when (val result = tapListResult) {
-            is GetTapListUseCase.Result.Success -> result.data.toImmutableList()
-            else -> persistentListOf()
-        }
-        
-        val foodTrucks = when (val result = foodTruckResult) {
-            is GetFoodTrucksUseCase.Result.Success -> result.data.toImmutableList()
-            else -> persistentListOf()
+        var tapHighlightState by rememberRetained { mutableStateOf(TapHighlightState()) }
+
+        // Apply filtering and sorting logic moved from UI
+        val filteredTaps = rememberRetained(tapListResult, isRefreshing, colorFilterState, sortState) {
+            tapListResult?.data
+                ?.takeUnless { isRefreshing }
+                ?.filter { if (colorFilterState.isEmpty()) true else it.colorValue in colorFilterState }
+                ?.sortedWith(sortState)
+                .orEmpty()
+                .run(::TapList)
         }
 
-        val isLoading = tapListResult is GetTapListUseCase.Result.Loading || 
-                       foodTruckResult is GetFoodTrucksUseCase.Result.Loading ||
-                       tapListResult == null
-
-        val errorMessage = when (val result = tapListResult) {
-            is GetTapListUseCase.Result.Error -> result.exception.message
-            else -> null
+        // Update expanded items when filtered taps change
+        LaunchedImpressionEffect(filteredTaps.size) {
+            expandedItems = ExpandedTaps()
         }
+
+        ShakeToHighlightEffect(filteredTaps, tapHighlightState) { tapHighlightState = it }
 
         return TapListUiState(
             store = screen.store,
-            taps = taps,
-            foodTrucks = foodTrucks,
-            isLoading = isLoading,
+            filteredTaps = filteredTaps,
+            foodTrucks = foodTruckResult?.data?.toImmutableList() ?: persistentListOf(),
             isRefreshing = isRefreshing,
-            errorMessage = errorMessage,
-            highlightedTapIndex = highlightedTapIndex,
-            currentColorIndex = currentColorIndex,
-            shouldScrollToHighlighted = shouldScrollToHighlighted,
-            shakeDetector = shakeDetector,
-            onShakeDetected = onShakeDetected,
-            onRefresh = loadData,
-            onBackPressed = {
-                navigator.pop()
+            errorMessage = tapListResult?.error?.message,
+            tapHighlightState = tapHighlightState,
+            colorFilterState = colorFilterState,
+            sortState = sortState,
+            expandedItems = expandedItems,
+            onRefresh = { isRefreshing = true },
+            onTapLongPressed = externalBrowser::openUntappdSearch,
+            onFoodTruckSelected = { foodTruck -> externalBrowser.openUrl(foodTruck.url) },
+            onColorFilterChanged = { newFilterState -> colorFilterState = newFilterState },
+            onSortChanged = { column ->
+                sortState = when (val index = column.index) {
+                    sortState.columnIndex -> sortState.copy(isAscending = !sortState.isAscending)
+                    else -> TapListSortState(index, true, column.sortType)
+                }
             },
-            onTapSelected = { tap ->
-                // Regular tap opens Untappd search
-                externalBrowser.openUntappdSearch(tap)
-            },
-            onTapLongPressed = { tap ->
-                // Long press also opens Untappd search
-                externalBrowser.openUntappdSearch(tap)
-            },
-            onFoodTruckSelected = { foodTruck ->
-                externalBrowser.openUrl(foodTruck.url)
+            onTapExpandToggled = { tapNumber ->
+                expandedItems = with(expandedItems) { 
+                    ExpandedTaps(if (contains(tapNumber)) minus(tapNumber) else plus(tapNumber)) 
+                }
             }
         )
     }
+
+    @Composable
+    private fun ShakeToHighlightEffect(
+        filteredTaps: TapList,
+        tapHighlightState: TapHighlightState,
+        onStateUpdated: (TapHighlightState) -> Unit
+    ) {
+        var animationTrigger by rememberRetained { mutableIntStateOf(0) }
+        val rememberedCallback by rememberUpdatedState(onStateUpdated)
+
+        LaunchedEffect(animationTrigger) {
+            if (animationTrigger > 0) {
+                // Cycle through colors for 3 seconds (15 cycles * 200ms each)
+                repeat((SHAKE_HIGHLIGHT_DURATION_MS / COLOR_CYCLE_DURATION_MS).toInt()) {
+                    rememberedCallback(tapHighlightState.copy(currentColorIndex = it % 5))
+                    delay(COLOR_CYCLE_DURATION_MS)
+                }
+
+                // Reset after animation
+                rememberedCallback(TapHighlightState())
+            }
+        }
+
+        LaunchedEffect(filteredTaps.size) {
+            if (filteredTaps.isNotEmpty()) {
+                shakeDetector.shakesFlow(1000).collect {
+                    // Start new animation with filtered taps
+                    onStateUpdated(
+                        TapHighlightState(
+                            highlightedTapIndex = Random.nextInt(filteredTaps.size),
+                            shouldScrollToHighlighted = true,
+                            currentColorIndex = 0
+                        ),
+                    )
+
+                    // Trigger animation by incrementing the trigger
+                    animationTrigger++
+                }
+            }
+        }
+    }
+
 }
 
 data class TapListUiState(
     val store: com.serge.chuckstaplist.ChucksStore,
-    val taps: ImmutableList<TapModel>,
+    val filteredTaps: TapList,
     val foodTrucks: ImmutableList<FoodTruckEvent>,
-    val isLoading: Boolean,
     val isRefreshing: Boolean,
     val errorMessage: String?,
-    val highlightedTapIndex: Int = -1,
-    val currentColorIndex: Int = 0,
-    val shouldScrollToHighlighted: Boolean = false,
-    val shakeDetector: ShakeDetector,
-    val onShakeDetected: (List<TapModel>) -> Unit,
+    val tapHighlightState: TapHighlightState,
+    val colorFilterState: ColorFilterSet,
+    val sortState: TapListSortState,
+    val expandedItems: ExpandedTaps,
     val onRefresh: () -> Unit,
-    val onBackPressed: () -> Unit,
-    val onTapSelected: (TapModel) -> Unit,
     val onTapLongPressed: (TapModel) -> Unit,
-    val onFoodTruckSelected: (FoodTruckEvent) -> Unit
+    val onFoodTruckSelected: (FoodTruckEvent) -> Unit,
+    val onColorFilterChanged: (ColorFilterSet) -> Unit,
+    val onSortChanged: (com.serge.chuckstaplist.ui.models.TapListColumn) -> Unit,
+    val onTapExpandToggled: (Int) -> Unit
 ) : CircuitUiState
 
 fun tapListPresenterFactory(

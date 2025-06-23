@@ -17,7 +17,6 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.backstack.rememberSaveableBackStack
-import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
@@ -46,17 +45,11 @@ fun ChucksCircuitApp(
             .build()
 
         val backStack = rememberSaveableBackStack(StoreSelectionScreen)
-        val navigator = rememberCircuitNavigator(backStack) {}
-
         CircuitCompositionLocals(circuit) {
             NavigableCircuitContent(
-                navigator = navigator, 
-                backStack = backStack, 
+                navigator = rememberCircuitNavigator(backStack) {},
+                backStack = backStack,
                 modifier = modifier,
-                decoration = AnimatedNavDecoration(
-                    circuit.animatedScreenTransforms,
-                    circuit.animatedNavDecoratorFactory
-                )
             )
         }
     }

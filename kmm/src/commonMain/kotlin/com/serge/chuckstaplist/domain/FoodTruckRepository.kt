@@ -1,4 +1,4 @@
-package com.serge.chuckstaplist.foodtruck
+package com.serge.chuckstaplist.domain
 
 import com.serge.chuckstaplist.api.GoogleCalendarApi
 import com.serge.chuckstaplist.api.calendar.CalendarApiKey
@@ -12,7 +12,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import org.koin.core.Koin
 import org.koin.core.logger.Logger
 import kotlin.time.Duration.Companion.days
 
