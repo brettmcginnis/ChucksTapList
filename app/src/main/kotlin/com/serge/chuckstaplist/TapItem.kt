@@ -36,8 +36,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.serge.chuckstaplist.api.TapModel
+import com.serge.chuckstaplist.api.markupPerOz
+import com.serge.chuckstaplist.api.markupPerPour
 import com.serge.chuckstaplist.api.price
 import com.serge.chuckstaplist.api.serving
+import com.serge.chuckstaplist.api.showCrowler
+import com.serge.chuckstaplist.api.showGrowler
 
 private const val FONT_SIZE_CHANGE_MULTIPLIER = .95f
 private const val UNKNOWN_VALUE = "???"
@@ -76,15 +80,19 @@ internal fun LazyListScope.tapItem(
                     .weight(1f)
                 Row(Modifier.fillMaxWidth(), Arrangement.Center) {
                     Text("Type: ${tap.type ?: "Other"}", textModifier, textAlign = TextAlign.End)
-                    Text("Serving Size: ${tap.serving}", textModifier, textAlign = TextAlign.Start)
+                    Text("Serving Size: ${tap.servingSizeFormatted}", textModifier, textAlign = TextAlign.Start)
                 }
                 Row(Modifier.fillMaxWidth(), Arrangement.Center) {
-                    if (tap.growlerCost > 0) {
+                    if (tap.showGrowler) {
                         Text(text = "Growler: ${"$%.2f".format(tap.growlerCost)}", textModifier, textAlign = TextAlign.End)
                     }
-                    if (tap.crowlerCost > 0) {
+                    if (tap.showCrowler) {
                         Text(text = "Crowler: ${"$%.2f".format(tap.crowlerCost)}", textModifier, textAlign = TextAlign.Start)
                     }
+                }
+                Row(Modifier.fillMaxWidth(), Arrangement.Center) {
+                    Text("Markup / Pour: ${"$%.2f".format(tap.markupPerPour)}", textModifier, textAlign = TextAlign.End)
+                    Text("Markup / Oz: ${"$%.2f".format(tap.markupPerOz)}", textModifier, textAlign = TextAlign.Start)
                 }
             }
         }
@@ -119,6 +127,12 @@ private val TapModel.info get() = listOf(
     TapInfoText(origin ?: UNKNOWN_VALUE),
     TapInfoText("${abv ?: 0}%")
 )
+
+private val TapModel.servingSizeFormatted
+    get() = when(serving) {
+        0 -> "???"
+        else -> "$serving oz"
+    }
 
 @Immutable
 private data class TapInfoText(val text: String, val numLines: Int = 1)

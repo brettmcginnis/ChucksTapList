@@ -19,8 +19,8 @@ android {
         applicationId "com.serge.chuckstaplist"
         minSdk 26
         targetSdk 33
-        versionCode 2
-        versionName "v1.0.1"
+        versionCode 3
+        versionName "v1.0.3"
 
         buildConfigField "String", "CALENDAR_API_KEY", calendarApiKey()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
