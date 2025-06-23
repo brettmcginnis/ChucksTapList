@@ -34,7 +34,9 @@ fun TapListHeader(
         ) {
             val nameWithSort = if (column.index == sortState.columnIndex) {
                 "${column.name} ${if (sortState.isAscending) "▼" else "▲"}"
-            } else column.name
+            } else {
+                column.name
+            }
             Text(nameWithSort, Modifier.padding(vertical = 4.dp), fontSize = 12.sp)
         }
     }

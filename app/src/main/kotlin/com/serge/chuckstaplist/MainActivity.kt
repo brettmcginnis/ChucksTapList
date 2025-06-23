@@ -44,7 +44,8 @@ class MainActivity : ComponentActivity() {
                     val tapListState by tapListViewModel.state.collectAsState()
                     val taps = (tapListState as? TapListViewModel.State.StoreInfo)?.taps.orEmpty().run(::TapList)
                     val foodTruckState by foodTruckViewModel.state.collectAsState()
-                    val foodTrucks = (foodTruckState as? FoodTruckViewModel.State.TruckList)?.foodTrucks.orEmpty().run(::FoodTruckList)
+                    val foodTrucks = (foodTruckState as? FoodTruckViewModel.State.TruckList)
+                        ?.foodTrucks.orEmpty().run(::FoodTruckList)
 
                     AnimatedVisibility(
                         visible = !isStoreSelected,
@@ -58,7 +59,13 @@ class MainActivity : ComponentActivity() {
                         exit = slideOutHorizontally { it }
                     ) {
                         val store = selectedStore ?: return@AnimatedVisibility
-                        ListChucksTaps(taps, foodTrucks, store, tapListState is TapListViewModel.State.Loading, onTruckEventSelected) {
+                        ListChucksTaps(
+                            taps = taps,
+                            foodTrucks = foodTrucks,
+                            selectedStore = store,
+                            isLoading = tapListState is TapListViewModel.State.Loading,
+                            onTruckEventSelected = onTruckEventSelected
+                        ) {
                             tapListViewModel.loadTapList(store, force = true)
                             foodTruckViewModel.loadFoodTrucks(store, force = true)
                         }

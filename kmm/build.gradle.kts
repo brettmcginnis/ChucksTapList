@@ -8,7 +8,15 @@ plugins {
 }
 
 kotlin {
-    android()
+    androidTarget {
+        compilations.all {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+                }
+            }
+        }
+    }
     
     val xcf = XCFramework()
     listOf(
@@ -45,7 +53,7 @@ kotlin {
                 implementation(libs.androidx.lifecycle.viewmodel.ktx)
             }
         }
-        val androidTest by getting
+        val androidUnitTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -68,11 +76,14 @@ kotlin {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 35
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 26
-        targetSdk = 33
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     namespace = "com.serge.chuckstaplist.kmm"
 }

@@ -4,7 +4,7 @@ import android.hardware.SensorManager
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,15 +25,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.core.content.getSystemService
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.ui.Alignment
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.serge.chuckstaplist.api.TapModel
 import com.serge.chuckstaplist.compose.effects.ScrollToEffect
 import com.serge.chuckstaplist.compose.whileResumed
@@ -70,7 +73,7 @@ class TapList(taps: List<TapModel>) : List<TapModel> by taps
 @Immutable
 class FoodTruckList(foodTrucks: List<FoodTruckEvent>) : List<FoodTruckEvent> by foodTrucks
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ListChucksTaps(
     taps: TapList,
@@ -80,7 +83,9 @@ fun ListChucksTaps(
     onTruckEventSelected: (FoodTruckEvent) -> Unit = {},
     onRefresh: () -> Unit,
 ) {
-    val (colorFilterState, setColorFilterState) = rememberSaveable(saver = ColorFilterSet.Saver) { mutableStateOf(ColorFilterSet()) }
+    val (colorFilterState, setColorFilterState) = rememberSaveable(
+        saver = ColorFilterSet.Saver
+    ) { mutableStateOf(ColorFilterSet()) }
     val scrollState = rememberLazyListState()
     var sortState by rememberSaveable { mutableStateOf(TapListSortState(0, true, TAP_LIST_COLUMNS[0].sortType)) }
     val filteredTaps = taps.takeUnless { isLoading }
@@ -89,7 +94,10 @@ fun ListChucksTaps(
         .orEmpty()
         .run(::TapList)
 
-    var expandedItems by rememberSaveable(filteredTaps.size, saver = ExpandedTaps.Saver) { mutableStateOf(ExpandedTaps()) }
+    var expandedItems by rememberSaveable(
+        filteredTaps.size,
+        saver = ExpandedTaps.Saver
+    ) { mutableStateOf(ExpandedTaps()) }
     val highlightedIndexState = rememberSaveable(filteredTaps.size) { mutableStateOf(-1) }
     val animatableColor = remember(highlightedIndexState.value) { Animatable(Gray) }
 
@@ -101,7 +109,8 @@ fun ListChucksTaps(
         animatableColor.animateTo(Gray, tween(SUB_ANIMATION_DURATION))
     }
 
-    SwipeRefresh(rememberSwipeRefreshState(isLoading), onRefresh = onRefresh) {
+    val pullRefreshState = rememberPullRefreshState(isLoading, onRefresh)
+    Box(Modifier.pullRefresh(pullRefreshState)) {
         LazyColumn(Modifier.fillMaxSize(), scrollState) {
             item {
                 Text(
@@ -128,12 +137,19 @@ fun ListChucksTaps(
             filteredTaps.forEachIndexed { index, tap ->
                 val bgColor = if (index % 2 == 0) DarkGray else Color.Black
                 val borderColor = if (index == highlightedIndexState.value) animatableColor.value else Gray
-                tapItem(tap, expandedItems.contains(tap.tapNumber), bgColor, borderColor, TAP_LIST_COLUMNS.weights) { beer ->
+                tapItem(
+                    tap = tap,
+                    isExpanded = expandedItems.contains(tap.tapNumber),
+                    bgColor = bgColor,
+                    borderColor = borderColor,
+                    colWeights = TAP_LIST_COLUMNS.weights
+                ) { beer ->
                     val tapNumber = beer.tapNumber
                     expandedItems = with(expandedItems) { ExpandedTaps(if (contains(tapNumber)) minus(tapNumber) else plus(tapNumber)) }
                 }
             }
         }
+        PullRefreshIndicator(isLoading, pullRefreshState, Modifier.align(Alignment.TopCenter))
     }
 }
 
@@ -167,9 +183,21 @@ fun TapListPreview() {
         ) {
             val now = Clock.System.now()
             val foodTrucks = listOf(
-                FoodTruckEvent("Grilled Cheese Experience", "http://grilledcheeseseattle.com/", now.toLocalDateTime(TimeZone.UTC)),
-                FoodTruckEvent("Where Ya At Matt", "https://www.whereyaatmatt.com/", now.plus(1.days).toLocalDateTime(TimeZone.UTC)),
-                FoodTruckEvent("El Camion", "http://elcamionseattle.com/", now.plus(2.days).toLocalDateTime(TimeZone.UTC))
+                FoodTruckEvent(
+                    "Grilled Cheese Experience",
+                    "http://grilledcheeseseattle.com/",
+                    now.toLocalDateTime(TimeZone.UTC)
+                ),
+                FoodTruckEvent(
+                    "Where Ya At Matt",
+                    "https://www.whereyaatmatt.com/",
+                    now.plus(1.days).toLocalDateTime(TimeZone.UTC)
+                ),
+                FoodTruckEvent(
+                    "El Camion",
+                    "http://elcamionseattle.com/",
+                    now.plus(2.days).toLocalDateTime(TimeZone.UTC)
+                )
             ).run(::FoodTruckList)
             listOf(
                 TapModel(1, "Duchesse"),

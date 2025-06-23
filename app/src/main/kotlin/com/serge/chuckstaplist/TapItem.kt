@@ -64,7 +64,7 @@ internal fun LazyListScope.tapItem(
             .border(2.dp, borderColor)
             .padding(2.dp)
             .combinedClickable(onLongClick = { context.openUntappdSearch(tap) }) { onClick(tap) }
-            .animateItemPlacement()
+            .animateItem()
     ) {
         Row(Modifier, Arrangement.Center, Alignment.CenterVertically) {
             TapMainInfo(tap, tap.colorValue, colWeights)
@@ -84,10 +84,18 @@ internal fun LazyListScope.tapItem(
                 }
                 Row(Modifier.fillMaxWidth(), Arrangement.Center) {
                     if (tap.showGrowler) {
-                        Text(text = "Growler: ${"$%.2f".format(tap.growlerCost)}", textModifier, textAlign = TextAlign.End)
+                        Text(
+                            text = "Growler: ${"$%.2f".format(tap.growlerCost)}",
+                            textModifier,
+                            textAlign = TextAlign.End
+                        )
                     }
                     if (tap.showCrowler) {
-                        Text(text = "Crowler: ${"$%.2f".format(tap.crowlerCost)}", textModifier, textAlign = TextAlign.Start)
+                        Text(
+                            text = "Crowler: ${"$%.2f".format(tap.crowlerCost)}",
+                            textModifier,
+                            textAlign = TextAlign.Start
+                        )
                     }
                 }
                 Row(Modifier.fillMaxWidth(), Arrangement.Center) {
@@ -129,7 +137,7 @@ private val TapModel.info get() = listOf(
 )
 
 private val TapModel.servingSizeFormatted
-    get() = when(serving) {
+    get() = when (serving) {
         0 -> "???"
         else -> "$serving oz"
     }

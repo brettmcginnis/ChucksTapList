@@ -7,7 +7,7 @@ import org.koin.dsl.module
 
 fun chucksModule(calendarApiKey: String) = module {
     includes(chucksApiModule(calendarApiKey))
-    factory { FoodTruckRepository(get(), get(), get()) }
+    factory { FoodTruckRepository(get(), get(), logger) }
     vm { FoodTruckViewModel(get()) }
     vm { TapListViewModel(get()) }
 }

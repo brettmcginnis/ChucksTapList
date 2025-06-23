@@ -1,6 +1,7 @@
 plugins {
     alias libs.plugins.android.application
     alias libs.plugins.kotlin.android
+    alias libs.plugins.kotlin.compose
     id 'kotlin-parcelize'
 }
 
@@ -13,25 +14,17 @@ android {
             keyPassword System.getenv("SigningKeyPassword")
         }
     }
-    compileSdk 33
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.serge.chuckstaplist"
         minSdk 26
-        targetSdk 33
+        targetSdk 35
         versionCode 3
         versionName "v1.0.3"
 
         buildConfigField "String", "CALENDAR_API_KEY", calendarApiKey()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    applicationVariants.configureEach { variant ->
-        kotlin.sourceSets {
-            getByName(name) {
-                kotlin.srcDir("build/generated/ksp/${variant.name}/kotlin")
-            }
-        }
     }
 
     buildTypes {
@@ -42,19 +35,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
     buildFeatures {
         compose true
+        buildConfig true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion libs.versions.compose.compiler.get()
-    }
-    packagingOptions {
+    packaging {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
             excludes += '/META-INF/DEPENDENCIES'
@@ -65,11 +56,11 @@ android {
 
 dependencies {
     implementation project(':kmm')
+    implementation platform(libs.androidx.compose.bom)
     implementation libs.bundles.androidx.compose
     implementation libs.bundles.androidx.lifecycle
     implementation libs.androidx.browser
     implementation libs.androidx.core
-    implementation libs.google.swiperefresh
     implementation libs.square.seismic
     implementation libs.koin.compose
     implementation libs.kotlinx.datetime
