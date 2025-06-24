@@ -30,6 +30,14 @@ kotlin {
         it.binaries.framework {
             baseName = "kmm"
             xcf.add(this)
+            isStatic = true
+        }
+    }
+    
+    // Configure iOS deployment target
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        binaries.all {
+            freeCompilerArgs += "-Xbinary=bundleId=com.serge.chuckstaplist.kmm"
         }
     }
 
@@ -72,6 +80,9 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+            dependencies {
+                implementation(libs.ktor.client.darwin)
+            }
         }
         val iosX64Test by getting
         val iosArm64Test by getting

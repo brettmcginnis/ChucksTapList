@@ -8,7 +8,12 @@ private val DarkColorPalette = darkColors(
     primary = DarkGreen,
     primaryVariant = Green,
     secondary = Orange,
-    background = DarkGray
+    background = DarkGray,
+    surface = DarkGray,
+    onPrimary = androidx.compose.ui.graphics.Color.White,
+    onSecondary = androidx.compose.ui.graphics.Color.Black,
+    onBackground = androidx.compose.ui.graphics.Color.White,
+    onSurface = androidx.compose.ui.graphics.Color.White
 )
 
 @Composable
