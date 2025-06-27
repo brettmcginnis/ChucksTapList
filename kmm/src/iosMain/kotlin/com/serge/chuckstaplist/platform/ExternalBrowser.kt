@@ -1,13 +1,23 @@
 package com.serge.chuckstaplist.platform
 
-import com.serge.chuckstaplist.api.TapModel
+import platform.Foundation.NSCharacterSet
+import platform.Foundation.NSString
+import platform.Foundation.NSURL
+import platform.Foundation.URLQueryAllowedCharacterSet
+import platform.Foundation.stringByAddingPercentEncodingWithAllowedCharacters
+import platform.UIKit.UIApplication
 
 actual class ExternalBrowser {
     actual fun openUrl(url: String) {
-        // No-op for iOS - can be implemented later with platform.Foundation.NSURL
-    }
-    
-    actual fun openUntappdSearch(tap: TapModel) {
-        // No-op for iOS
+        val nsUrl = NSURL.URLWithString(url)
+        nsUrl?.let { 
+            UIApplication.sharedApplication.openURL(it, emptyMap<Any?, Any?>()) {}
+        }
     }
 }
+
+@Suppress("CAST_NEVER_SUCCEEDS")
+actual fun String.encoded() : String =
+    (this as NSString)
+        .stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet)
+        ?: replace(' ', '+')

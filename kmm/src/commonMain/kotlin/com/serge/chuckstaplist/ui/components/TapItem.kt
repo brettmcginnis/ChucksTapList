@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,6 +40,7 @@ import com.serge.chuckstaplist.ui.extensions.colorValue
 import com.serge.chuckstaplist.ui.extensions.info
 import com.serge.chuckstaplist.ui.extensions.servingSizeFormatted
 import com.serge.chuckstaplist.ui.models.TapListColumns
+import com.serge.chuckstaplist.ui.theme.Gray
 import kotlin.math.roundToInt
 
 private const val FONT_SIZE_CHANGE_MULTIPLIER = .95f
@@ -48,7 +49,7 @@ fun LazyListScope.tapItem(
     tap: TapModel,
     isExpanded: Boolean = false,
     bgColor: Color,
-    borderColor: Color,
+    borderColor: Color?,
     colWeights: TapListColumns.Weights,
     onClick: (TapModel) -> Unit,
     onLongClick: (TapModel) -> Unit = { }
@@ -58,7 +59,7 @@ fun LazyListScope.tapItem(
             .fillMaxWidth()
             .background(bgColor)
             .padding(2.dp)
-            .border(2.dp, borderColor)
+            .border(2.dp, borderColor ?: Gray)
             .padding(2.dp)
             .combinedClickable(onLongClick = { onLongClick(tap) }) { onClick(tap) }
             .animateItem()
@@ -76,38 +77,53 @@ fun LazyListScope.tapItem(
                     .padding(horizontal = 12.dp, vertical = 2.dp)
                     .weight(1f)
                 Row(Modifier.fillMaxWidth(), Arrangement.Center) {
-                    Text("Type: ${tap.type ?: "Other"}", textModifier, color = Color.LightGray, textAlign = TextAlign.End)
-                    Text("Serving Size: ${tap.servingSizeFormatted}", textModifier, color = Color.LightGray, textAlign = TextAlign.Start)
+                    Text(
+                        "Type: ${tap.type ?: "Other"}",
+                        textModifier,
+                        color = Color.LightGray,
+                        style = MaterialTheme.typography.body2,
+                        textAlign = TextAlign.End
+                    )
+                    Text("Serving Size: ${tap.servingSizeFormatted}",
+                        textModifier,
+                        color = Color.LightGray,
+                        style = MaterialTheme.typography.body2,
+                        textAlign = TextAlign.Start
+                    )
                 }
                 Row(Modifier.fillMaxWidth(), Arrangement.Center) {
                     if (tap.showGrowler) {
                         Text(
-                            text = "Growler: ${tap.growlerCost.roundToDecimals()}",
+                            text = "Growler: ${tap.growlerCost.toMoneyString()}",
                             textModifier,
                             color = Color.LightGray,
+                            style = MaterialTheme.typography.body2,
                             textAlign = TextAlign.End
                         )
                     }
                     if (tap.showCrowler) {
                         Text(
-                            text = "Crowler: ${tap.crowlerCost.roundToDecimals()}",
+                            text = "Crowler: ${tap.crowlerCost.toMoneyString()}",
                             textModifier,
                             color = Color.LightGray,
+                            style = MaterialTheme.typography.body2,
                             textAlign = TextAlign.Start
                         )
                     }
                 }
                 Row(Modifier.fillMaxWidth(), Arrangement.Center) {
                     Text(
-                        "Markup / Pour: ${tap.markupPerPour.roundToDecimals()}",
+                        "Markup / Pour: ${tap.markupPerPour.toMoneyString()}",
                         textModifier,
                         color = Color.LightGray,
+                        style = MaterialTheme.typography.body2,
                         textAlign = TextAlign.End
                     )
                     Text(
-                        "Markup / Oz: ${tap.markupPerOz.roundToDecimals()}",
+                        "Markup / Oz: ${tap.markupPerOz.toMoneyString()}",
                         textModifier,
                         color = Color.LightGray,
+                        style = MaterialTheme.typography.body2,
                         textAlign = TextAlign.Start
                     )
                 }
@@ -116,11 +132,12 @@ fun LazyListScope.tapItem(
     }
 }
 
-private fun Double.roundToDecimals(decimals: Int = 2): Float {
-    var dotAt = 1
-    repeat(decimals) { dotAt *= 10 }
-    val roundedValue = (this * dotAt).roundToInt()
-    return (roundedValue / dotAt) + (roundedValue % dotAt).toFloat() / dotAt
+private fun Double.toMoneyString(): String {
+    val toInt = (this * 100).roundToInt()
+    val zeroPad = if(toInt % 100 == 0 || toInt % 10 == 0) "0" else ""
+    val roundedValue = (toInt / 100) + (toInt % 100).toFloat() / 100
+
+    return "$${roundedValue}$zeroPad"
 }
 
 @Composable
@@ -132,12 +149,13 @@ private fun RowScope.TapMainInfo(
     val alignment = if (index == 1) Alignment.CenterStart else Alignment.Center // don't center name
     Box(modifier = Modifier.weight(colWeights[index]), contentAlignment = alignment) {
         var fontSizeMultiplier by remember(infoColumn.text) { mutableStateOf(1f) }
+        val textStyle = MaterialTheme.typography.body1
         Text(
-            modifier = Modifier.padding(4.dp),
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
             text = infoColumn.text,
             maxLines = infoColumn.numLines,
             overflow = TextOverflow.Visible,
-            style = LocalTextStyle.current.copy(fontSize = LocalTextStyle.current.fontSize * fontSizeMultiplier),
+            style = textStyle.copy(fontSize = textStyle.fontSize * fontSizeMultiplier),
             color = color,
             onTextLayout = { if (it.hasVisualOverflow) fontSizeMultiplier *= FONT_SIZE_CHANGE_MULTIPLIER }
         )

@@ -1,6 +1,7 @@
 package com.serge.chuckstaplist.ui.models
 
 import androidx.compose.runtime.Immutable
+import com.serge.chuckstaplist.api.TapModel
 import com.serge.chuckstaplist.domain.FoodTruckEvent
 
 @Immutable
@@ -12,7 +13,7 @@ class TapListColumns(columns: List<TapListColumn>) : List<TapListColumn> by colu
 }
 
 @Immutable
-class TapList(taps: List<com.serge.chuckstaplist.api.TapModel>) : List<com.serge.chuckstaplist.api.TapModel> by taps
+class TapList(taps: List<TapModel>) : List<TapModel> by taps
 
 @Immutable
 class FoodTruckList(foodTrucks: List<FoodTruckEvent>) : List<FoodTruckEvent> by foodTrucks

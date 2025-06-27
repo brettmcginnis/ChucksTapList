@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.BiasAlignment
@@ -25,7 +26,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.serge.chuckstaplist.ChucksStore
@@ -48,9 +48,8 @@ fun StoreSelector(onStoreSelected: (ChucksStore) -> Unit) {
             "Chuck's Hop Shop",
             modifier = Modifier.fillMaxWidth(),
             color = Color.White,
-            fontSize = 24.sp,
+            style = MaterialTheme.typography.h5,
             fontWeight = FontWeight.Bold,
-            textDecoration = TextDecoration.Underline,
             textAlign = TextAlign.Center
         )
         if (isLandscape) {
@@ -97,7 +96,7 @@ private fun BoxScope.addStore(store: ChucksStore) {
             .background(DarkGreen.copy(alpha = STORE_NAME_BACKGROUND_ALPHA), RectangleShape)
             .padding(vertical = 8.dp),
         color = Color.White,
-        fontSize = 20.sp,
+        style = MaterialTheme.typography.h6,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center
     )

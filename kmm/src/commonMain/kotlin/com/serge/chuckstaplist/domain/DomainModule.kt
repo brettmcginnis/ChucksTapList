@@ -11,4 +11,6 @@ internal fun chucksDomainModule(calendarApiKey: String) = module {
     factoryOf(::GetTapListUseCase)
     factoryOf(::GetFoodTrucksUseCase)
     factory { FoodTruckRepository(get(), get(), logger) }
+    single { createDataStore() }
+    single { PreferencesRepository(get()) }
 }

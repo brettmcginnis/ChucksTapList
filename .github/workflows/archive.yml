@@ -6,19 +6,31 @@ on:
 jobs:
   archive:
     runs-on: ubuntu-latest
-    container: docker
     steps:
       - uses: actions/checkout@v4
-      - run: echo "$ChucksSigningKey" | base64 -d > $(pwd)/chuck_signing_key.jks
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+      
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      - name: Setup signing key
+        run: echo "$ChucksSigningKey" | base64 -d > $(pwd)/chuck_signing_key.jks
         env:
           ChucksSigningKey: ${{ secrets.CHUCKS_SIGNING_KEY }}
-      - uses: ./.github/actions/gradle
-        with:
-          command: assemble
+      
+      - name: Build APK
+        run: ./gradlew assemble --stacktrace
         env:
           GoogleApiKey: ${{ secrets.PROD_GOOGLE_MAPS_API_KEY }}
           SigningKeyAlias: ${{ secrets.SIGNING_KEY_ALIAS }}
           SigningKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+      
       - uses: actions/upload-artifact@v4
         if: ${{ ! cancelled() }}
         with:

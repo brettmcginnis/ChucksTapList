@@ -22,11 +22,4 @@ actual class ShakeDetector(context: Context) {
         awaitClose { detector?.stop() }
     }.buffer(Channel.UNLIMITED).distinctUntilChanged { old, new -> new - old < delayAfterEventMs }
     
-    actual fun start() {
-        // Implementation handled in shakesFlow
-    }
-    
-    actual fun stop() {
-        detector?.stop()
-    }
 }

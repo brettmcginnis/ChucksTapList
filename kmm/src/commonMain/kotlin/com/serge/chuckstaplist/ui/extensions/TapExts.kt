@@ -8,6 +8,7 @@ import com.serge.chuckstaplist.api.price
 import com.serge.chuckstaplist.api.serving
 import com.serge.chuckstaplist.api.showCrowler
 import com.serge.chuckstaplist.api.showGrowler
+import com.serge.chuckstaplist.platform.encoded
 import com.serge.chuckstaplist.ui.theme.Green
 import com.serge.chuckstaplist.ui.theme.Orange
 import com.serge.chuckstaplist.ui.theme.Pink

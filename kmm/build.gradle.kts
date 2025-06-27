@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+import java.util.Properties
 
 plugins {
     kotlin("multiplatform")
@@ -8,6 +9,53 @@ plugins {
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-parcelize")
+}
+
+// Load local.properties for fallback API keys
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
+}
+
+fun getApiKey(): String {
+    return System.getenv("GoogleApiKey") 
+        ?: localProperties.getProperty("GoogleApiKey") 
+        ?: ""
+}
+
+// Create a single shared task for generating iOS BuildConfig
+val generateIosBuildConfig = tasks.register("generateIosBuildConfig") {
+    val apiKey = getApiKey()
+    val buildConfigFile = File(projectDir, "src/iosMain/kotlin/BuildConfig.kt")
+    outputs.file(buildConfigFile)
+    outputs.upToDateWhen { false } // Always regenerate to ensure fresh API key
+    
+    doLast {
+        buildConfigFile.parentFile.mkdirs()
+        buildConfigFile.writeText("""
+            object BuildConfig {
+                const val CALENDAR_API_KEY = "$apiKey"
+            }
+        """.trimIndent())
+    }
+}
+
+fun configureIosBuildConfig(target: org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget) {
+    target.compilations.getByName("main") {
+        compileTaskProvider.configure {
+            dependsOn(generateIosBuildConfig)
+        }
+    }
+}
+
+// Clean task to remove generated BuildConfig
+tasks.register<Delete>("cleanIosBuildConfig") {
+    delete("src/iosMain/kotlin/BuildConfig.kt")
+}
+
+tasks.named("clean") {
+    dependsOn("cleanIosBuildConfig")
 }
 
 kotlin {
@@ -32,12 +80,23 @@ kotlin {
             xcf.add(this)
             isStatic = true
         }
+        
+        configureIosBuildConfig(it)
     }
     
     // Configure iOS deployment target
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
         binaries.all {
             freeCompilerArgs += "-Xbinary=bundleId=com.serge.chuckstaplist.kmm"
+            // Memory optimizations for compilation
+            freeCompilerArgs += "-Xallocator=std"
+            freeCompilerArgs += "-opt"
+        }
+        compilations.all {
+            compilerOptions.configure {
+                // Enable incremental compilation to reduce memory usage
+                freeCompilerArgs.add("-Xpartial-linkage=disable")
+            }
         }
     }
 
@@ -55,6 +114,8 @@ kotlin {
                 implementation(libs.bundles.compose.multiplatform)
                 implementation(libs.bundles.circuit)
                 implementation(compose.components.resources)
+                implementation(compose.materialIconsExtended)
+                implementation(libs.androidx.datastore.core)
             }
         }
         val commonTest by getting {
@@ -68,6 +129,7 @@ kotlin {
                 implementation(libs.androidx.lifecycle.runtime)
                 implementation(libs.androidx.activity)
                 implementation(libs.androidx.browser)
+                implementation(libs.androidx.datastore.android)
                 implementation(libs.square.seismic)
             }
         }

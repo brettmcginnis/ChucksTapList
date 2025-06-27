@@ -5,6 +5,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.serge.chuckstaplist.domain.PreferencesRepository
 import com.serge.chuckstaplist.domain.usecases.GetFoodTrucksUseCase
 import com.serge.chuckstaplist.domain.usecases.GetTapListUseCase
 import com.serge.chuckstaplist.platform.ExternalBrowser
@@ -34,12 +35,13 @@ fun ChucksCircuitApp(
         val activity = getActivity()
         val externalBrowser: ExternalBrowser = koinInject { parametersOf(activity) }
         val shakeDetector: ShakeDetector = koinInject()
+        val preferencesRepository: PreferencesRepository = koinInject()
         
         val circuit = Circuit.Builder()
             .addPresenterFactory(storeSelectionPresenterFactory())
-            .addPresenterFactory(tapListPresenterFactory(getTapListUseCase, getFoodTrucksUseCase, externalBrowser, shakeDetector))
+            .addPresenterFactory(tapListPresenterFactory(getTapListUseCase, getFoodTrucksUseCase, externalBrowser))
             .addUiFactory(storeSelectionUiFactory())
-            .addUiFactory(tapListUiFactory())
+            .addUiFactory(tapListUiFactory(preferencesRepository, shakeDetector))
             .addAnimatedScreenTransform(StoreSelectionScreen::class, StoreSelectionTransition)
             .addAnimatedScreenTransform(TapListScreen::class, TapListTransition)
             .build()

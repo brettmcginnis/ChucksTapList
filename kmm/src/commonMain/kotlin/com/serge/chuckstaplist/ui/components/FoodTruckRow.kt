@@ -38,7 +38,7 @@ fun FoodTruckRow(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    modifier = Modifier.padding(6.dp),
+                    modifier = Modifier.padding(8.dp),
                     text = foodTruck.name,
                     color = Color.LightGray
                 )

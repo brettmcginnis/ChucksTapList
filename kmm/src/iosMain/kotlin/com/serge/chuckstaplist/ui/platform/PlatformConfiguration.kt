@@ -10,3 +10,5 @@ actual val isLandscape: Boolean
         return orientation == UIDeviceOrientation.UIDeviceOrientationLandscapeLeft ||
                 orientation == UIDeviceOrientation.UIDeviceOrientationLandscapeRight
     }
+
+actual val isIOS: Boolean = true

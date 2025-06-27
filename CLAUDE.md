@@ -64,7 +64,7 @@ The project uses:
 
 ## Development Notes
 
-- API key for Google Calendar stored in environment variable `GoogleApiKey` or `local.properties` as `calendar_key`
+- API key for Google Calendar stored in environment variable `GoogleApiKey` or `local.properties`
 - Signing configuration uses environment variables for release builds
 - The app filters invalid tap entries (entries without letters, starting with "_" or "-", or missing prices)
 - Chrome Custom Tabs integration for external links (Untappd, food truck URLs)

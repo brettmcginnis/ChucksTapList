@@ -15,6 +15,8 @@ circuit = "0.28.1"
 androidx-activity = { module = "androidx.activity:activity-compose", version = "1.10.1" }
 androidx-browser = { module = "androidx.browser:browser", version = "1.8.0" }
 androidx-core = { module = "androidx.core:core-ktx", version = "1.16.0" }
+androidx-datastore-core = { module = "androidx.datastore:datastore-preferences-core", version = "1.1.7" }
+androidx-datastore-android = { module = "androidx.datastore:datastore-preferences", version = "1.1.7" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 androidx-compose-material = { module = "androidx.compose.material:material" }
 androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-extended" }
@@ -32,7 +34,7 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.1" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.7.3" }
-kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.8" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.4.0" }
 
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }

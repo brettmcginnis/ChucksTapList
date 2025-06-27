@@ -19,3 +19,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# iOS
+*.xcuserstate
+xcuserdata/
+/kmm/src/iosMain/kotlin/BuildConfig.kt
