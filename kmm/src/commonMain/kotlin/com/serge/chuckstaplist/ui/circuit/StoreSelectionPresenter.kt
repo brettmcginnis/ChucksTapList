@@ -15,17 +15,9 @@ class StoreSelectionPresenter(
 
     @Composable
     override fun present(): StoreSelectionUiState {
-        val stores = listOf(
-            ChucksStore.SEWARD_PARK,
-            ChucksStore.GREENWOOD,
-            ChucksStore.CENTRAL_DISTRICT
-        ).toImmutableList()
-
         return StoreSelectionUiState(
-            stores = stores,
-            onStoreSelected = { store ->
-                navigator.goTo(TapListScreen(store))
-            }
+            stores = ChucksStore.entries.toImmutableList(),
+            onStoreSelected = { store -> navigator.goTo(TapListScreen(store)) }
         )
     }
 }

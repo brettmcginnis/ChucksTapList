@@ -16,6 +16,11 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 import kotlin.time.TimeSource
 
+private const val SHAKE_THRESHOLD = 1.5
+private const val SHAKE_SLOP_TIME_MS = 500L
+private const val SHAKE_COUNT_RESET_MS = 3000L
+private const val MIN_SHAKE_COUNT = 2
+
 @OptIn(ExperimentalForeignApi::class)
 actual class ShakeDetector {
     private val motionManager = CMMotionManager()
@@ -26,13 +31,7 @@ actual class ShakeDetector {
             awaitClose { }
             return@callbackFlow
         }
-        
-        // Shake detection parameters
-        val shakeThreshold = 1.5
-        val shakeSlopTimeMs = 500L
-        val shakeCountResetTimeMs = 3000L
-        val minShakeCount = 2
-        
+
         // State tracking
         var lastShakeTime = 0L
         var shakeCount = 0
@@ -42,19 +41,19 @@ actual class ShakeDetector {
         fun isShakeDetected(acceleration: Double, currentTime: Long): Boolean {
             val accelerationDelta = abs(acceleration - lastAcceleration)
             
-            if (accelerationDelta > shakeThreshold) {
+            if (accelerationDelta > SHAKE_THRESHOLD) {
                 val timeSinceLastShake = currentTime - lastShakeTime
                 
-                if (timeSinceLastShake > shakeSlopTimeMs) {
+                if (timeSinceLastShake > SHAKE_SLOP_TIME_MS) {
                     // Reset shake count if too much time has passed
-                    if (timeSinceLastShake > shakeCountResetTimeMs) {
+                    if (timeSinceLastShake > SHAKE_COUNT_RESET_MS) {
                         shakeCount = 0
                     }
                     
                     shakeCount++
                     lastShakeTime = currentTime
                     
-                    if (shakeCount >= minShakeCount) {
+                    if (shakeCount >= MIN_SHAKE_COUNT) {
                         shakeCount = 0 // Reset for next shake sequence
                         return true
                     }

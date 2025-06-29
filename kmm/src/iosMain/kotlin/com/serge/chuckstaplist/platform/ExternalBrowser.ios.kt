@@ -9,8 +9,7 @@ import platform.UIKit.UIApplication
 
 actual class ExternalBrowser {
     actual fun openUrl(url: String) {
-        val nsUrl = NSURL.URLWithString(url)
-        nsUrl?.let { 
+        NSURL.URLWithString(url)?.let {
             UIApplication.sharedApplication.openURL(it, emptyMap<Any?, Any?>()) {}
         }
     }

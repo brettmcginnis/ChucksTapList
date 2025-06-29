@@ -10,9 +10,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
-class GetTapListUseCase(
-    private val api: ChucksApi
-) {
+class GetTapListUseCase(private val api: ChucksApi) {
     operator fun invoke(store: ChucksStore): Flow<UseCaseResult<List<TapModel>>> =
         flow { emit(api.getTapList(store.menuStr).filter { it.isValidEntry() }) }
             .map<_, UseCaseResult<List<TapModel>>> { UseCaseResult.Success(it) }

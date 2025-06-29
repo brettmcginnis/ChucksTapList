@@ -12,3 +12,10 @@ actual val isLandscape: Boolean
     }
 
 actual val isIOS: Boolean = true
+
+// Android Specifics below which no-op on iOS
+@Composable
+actual fun getActivity(): Any? = null
+
+@Composable
+actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) = Unit

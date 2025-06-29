@@ -9,7 +9,7 @@ class StoreSelectionUi : Ui<StoreSelectionUiState> {
     
     @Composable
     override fun Content(state: StoreSelectionUiState, modifier: Modifier) {
-        StoreSelector(onStoreSelected = state.onStoreSelected)
+        StoreSelector(state.stores, state.onStoreSelected)
     }
 }
 

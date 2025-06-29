@@ -71,7 +71,7 @@ fun TutorialOverlay(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.7f))
-                .clickable { onDismiss() },
+                .clickable(interactionSource = null, indication = null) { onDismiss() },
             contentAlignment = Alignment.Center
         ) {
             AnimatedVisibility(

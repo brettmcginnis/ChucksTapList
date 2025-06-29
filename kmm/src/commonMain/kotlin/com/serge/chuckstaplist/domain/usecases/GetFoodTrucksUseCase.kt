@@ -9,9 +9,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
-class GetFoodTrucksUseCase(
-    private val repository: FoodTruckRepository
-) {
+class GetFoodTrucksUseCase(private val repository: FoodTruckRepository) {
     operator fun invoke(store: ChucksStore): Flow<UseCaseResult<List<FoodTruckEvent>>> =
         flow { emit(repository.getFoodTrucks(store.calendarId)) }
             .map<_, UseCaseResult<List<FoodTruckEvent>>> { UseCaseResult.Success(it) }

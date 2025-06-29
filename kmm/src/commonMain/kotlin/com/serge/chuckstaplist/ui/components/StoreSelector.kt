@@ -32,13 +32,13 @@ import com.serge.chuckstaplist.ChucksStore
 import com.serge.chuckstaplist.ui.platform.getStorePainter
 import com.serge.chuckstaplist.ui.platform.isLandscape
 import com.serge.chuckstaplist.ui.theme.DarkGreen
+import kotlinx.collections.immutable.ImmutableList
 
 private const val STORE_NAME_VERTICAL_BIAS = -.5f
 private const val STORE_NAME_BACKGROUND_ALPHA = .9f
 
 @Composable
-fun StoreSelector(onStoreSelected: (ChucksStore) -> Unit) {
-    val stores = listOf(ChucksStore.SEWARD_PARK, ChucksStore.GREENWOOD, ChucksStore.CENTRAL_DISTRICT)
+fun StoreSelector(stores: ImmutableList<ChucksStore>, onStoreSelected: (ChucksStore) -> Unit) {
     Column(
         Modifier
             .fillMaxSize()

@@ -7,6 +7,7 @@ import com.serge.chuckstaplist.extensions.removePrefix
 import com.serge.chuckstaplist.extensions.toMonthDay
 import com.serge.chuckstaplist.extensions.toRFC3339
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.UtcOffset
@@ -38,11 +39,12 @@ class FoodTruckRepository(
         return asSequence()
             .filter { it.status == STATUS_CONFIRMED }
             .map { entry -> entry to entry.dateTime }
-            .filter { (_, time) -> time > yesterday }
+            .filter { (_, time) -> time != null && time > yesterday }
             .sortedBy { (_, time) -> time }
             .fold(mutableListOf()) { acc, (event, time) ->
                 val sanitizedName = event.summary.removePrefix(namePrefixes)
-                val eventDate = time.toLocalDateTime(TimeZone.currentSystemDefault())
+                val eventDate = requireNotNull(time) { "non-null times were filtered" }
+                    .toLocalDateTime(TimeZone.currentSystemDefault())
                 acc.apply {
                     add(
                         FoodTruckEvent(
@@ -58,11 +60,14 @@ class FoodTruckRepository(
     private fun String.addDatePrefix(date: LocalDateTime) = "${date.toMonthDay()} - $this"
 
     @Suppress("MagicNumber")
-    private val CalendarEntryDto.dateTime get() = with(start.dateTime) {
-        val isoString = dropLast(6)
-        val offsetString = takeLast(6)
-        LocalDateTime.parse(isoString).toInstant(UtcOffset.parse(offsetString))
-    }
+    private val CalendarEntryDto.dateTime : Instant?
+        get() {
+            with(start.dateTime ?: return null) {
+                val isoString = dropLast(6)
+                val offsetString = takeLast(6)
+                return LocalDateTime.parse(isoString).toInstant(UtcOffset.parse(offsetString))
+            }
+        }
 
     private fun String.asGoogleSearchUrl() =
         "https://www.google.com/search?q=food+truck+seattle+${replace(" ", "+")}"

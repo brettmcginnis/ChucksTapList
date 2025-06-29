@@ -135,7 +135,7 @@ fun LazyListScope.tapItem(
 private fun Double.toMoneyString(): String {
     val toInt = (this * 100).roundToInt()
     val zeroPad = if(toInt % 100 == 0 || toInt % 10 == 0) "0" else ""
-    val roundedValue = (toInt / 100) + (toInt % 100).toFloat() / 100
+    val roundedValue = (toInt / 100) + (toInt % 100).toDouble() / 100
 
     return "$${roundedValue}$zeroPad"
 }
