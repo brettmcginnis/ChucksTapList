@@ -1,0 +1,3 @@
+PRODUCT_NAME = ChucksTapList
+BUNDLE_ID = com.serge.chuckstaplist.ios
+DEPLOYMENT_TARGET = 15.0

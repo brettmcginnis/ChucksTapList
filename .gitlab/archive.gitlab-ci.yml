@@ -1,0 +1,10 @@
+apk:
+  stage: build
+  artifacts:
+    when: always
+    expire_in: never
+    paths:
+      - ./**/outputs/**/*apk
+  script:
+    - cat "$ChucksSigningKey" | base64 -d > $(pwd)/chuck_signing_key.jks
+    - ./gradlew assemble

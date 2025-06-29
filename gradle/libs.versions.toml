@@ -1,55 +1,79 @@
 [versions]
-gradle = "7.3.1"
-kotlin = "1.7.20"
-compose = "1.3.0"
-compose_compiler = "1.3.2"
-coroutines = "1.6.4"
-detekt = "1.21.0"
-ksp = "1.7.20-1.0.7"
-koin = "3.2.2"
-koin_ksp = "1.0.3"
-ktor = "2.1.2"
-lifecycle = "2.5.1"
+agp = "8.10.1"
+gradle = "8.11.1"
+kotlin = "2.1.0"
+compose-bom = "2025.06.01"
+compose-multiplatform = "1.8.2"
+coroutines = "1.10.2"
+detekt = "1.23.7"
+ksp = "2.1.0-1.0.29"
+koin = "4.0.0"
+ktor = "3.0.1"
+lifecycle = "2.9.1"
+circuit = "0.28.1"
 
 [libraries]
-androidx-activity = { module = "androidx.activity:activity-compose", version = "1.6.0" }
-androidx-browser = { module = "androidx.browser:browser", version = "1.4.0" }
-androidx-core = { module = "androidx.core:core-ktx", version = "1.9.0" }
-androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
-androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
-androidx-compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
-androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
-androidx-compose-ui-test = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
+androidx-activity = { module = "androidx.activity:activity-compose", version = "1.10.1" }
+androidx-browser = { module = "androidx.browser:browser", version = "1.8.0" }
+androidx-core = { module = "androidx.core:core-ktx", version = "1.16.0" }
+androidx-datastore-core = { module = "androidx.datastore:datastore-preferences-core", version = "1.1.7" }
+androidx-datastore-android = { module = "androidx.datastore:datastore-preferences", version = "1.1.7" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+androidx-compose-material = { module = "androidx.compose.material:material" }
+androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-extended" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui" }
+androidx-compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
-androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
-androidx-test-ext = { module = "androidx.test.ext:junit", version = "1.1.3" }
 
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-compose-multiplatform = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.0" }
-kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.4.1" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.1" }
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.7.3" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.4.0" }
 
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-serialization = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 
-google-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version = "0.26.5-rc" }
 square-seismic = { module = "com.squareup:seismic", version = "1.0.3" }
 
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+
+compose-multiplatform-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+compose-multiplatform-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+compose-multiplatform-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-multiplatform" }
+compose-multiplatform-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
+compose-multiplatform-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-multiplatform" }
+compose-multiplatform-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+
+circuit-foundation = { module = "com.slack.circuit:circuit-foundation", version.ref = "circuit" }
+circuit-runtime = { module = "com.slack.circuit:circuit-runtime", version.ref = "circuit" }
+circuit-runtime-presenter = { module = "com.slack.circuit:circuit-runtime-presenter", version.ref = "circuit" }
+circuit-runtime-ui = { module = "com.slack.circuit:circuit-runtime-ui", version.ref = "circuit" }
+circuitx-effects = { module = "com.slack.circuit:circuitx-effects", version.ref = "circuit" }
+
 [bundles]
-androidx-compose = ["androidx-activity", "androidx-compose-material", "androidx-compose-ui", "androidx-compose-ui-preview"]
-androidx-lifecycle = ["androidx-lifecycle-runtime", "androidx-lifecycle-viewmodel"]
+androidx-compose = ["androidx-activity", "androidx-compose-material", "androidx-compose-material-icons", "androidx-compose-ui", "androidx-compose-ui-preview"]
+androidx-lifecycle = ["androidx-lifecycle-runtime", "androidx-lifecycle-runtime-compose"]
 ktor = ["ktor-client-cio", "ktor-client-content-negotiation", "ktor-serialization"]
+compose-multiplatform = ["compose-multiplatform-runtime", "compose-multiplatform-foundation", "compose-multiplatform-material", "compose-multiplatform-ui"]
+circuit = ["circuit-foundation", "circuit-runtime", "circuit-runtime-presenter", "circuit-runtime-ui", "circuitx-effects"]
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "gradle" }
-android-library = { id = "com.android.library", version.ref = "gradle" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 

@@ -10,8 +10,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
-rootProject.name = "Chuck's Tap List"
+rootProject.name = "ChucksTapList"
 include(":app")
 include(":kmm")
