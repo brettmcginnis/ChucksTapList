@@ -1,5 +1,6 @@
 [versions]
-gradle = "8.10.1"
+agp = "8.10.1"
+gradle = "8.11.1"
 kotlin = "2.1.0"
 compose-bom = "2025.06.01"
 compose-multiplatform = "1.8.2"
@@ -43,6 +44,8 @@ ktor-serialization = { module = "io.ktor:ktor-client-content-negotiation", versi
 
 square-seismic = { module = "com.squareup:seismic", version = "1.0.3" }
 
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+
 compose-multiplatform-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
 compose-multiplatform-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
 compose-multiplatform-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-multiplatform" }
@@ -64,8 +67,8 @@ compose-multiplatform = ["compose-multiplatform-runtime", "compose-multiplatform
 circuit = ["circuit-foundation", "circuit-runtime", "circuit-runtime-presenter", "circuit-runtime-ui", "circuitx-effects"]
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "gradle" }
-android-library = { id = "com.android.library", version.ref = "gradle" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

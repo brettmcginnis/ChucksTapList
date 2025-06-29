@@ -41,6 +41,11 @@ val generateIosBuildConfig = tasks.register("generateIosBuildConfig") {
     }
 }
 
+// Make iOS metadata compilation depend on BuildConfig generation
+afterEvaluate {
+    tasks.findByName("compileIosMainKotlinMetadata")?.dependsOn(generateIosBuildConfig)
+}
+
 fun configureIosBuildConfig(target: org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget) {
     target.compilations.getByName("main") {
         compileTaskProvider.configure {
@@ -93,9 +98,11 @@ kotlin {
             freeCompilerArgs += "-opt"
         }
         compilations.all {
-            compilerOptions.configure {
-                // Enable incremental compilation to reduce memory usage
-                freeCompilerArgs.add("-Xpartial-linkage=disable")
+            compileTaskProvider.configure {
+                compilerOptions {
+                    // Enable incremental compilation to reduce memory usage
+                    freeCompilerArgs.add("-Xpartial-linkage=disable")
+                }
             }
         }
     }

@@ -1,0 +1,77 @@
+import java.util.Properties
+
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+}
+
+android {
+    signingConfigs {
+        create("release") {
+            storeFile = file("${rootProject.projectDir}/chuck_signing_key.jks")
+            keyAlias = System.getenv("SigningKeyAlias")
+            storePassword = System.getenv("SigningKeyPassword")
+            keyPassword = System.getenv("SigningKeyPassword")
+        }
+    }
+    compileSdk = 35
+
+    defaultConfig {
+        applicationId = "com.serge.chuckstaplist"
+        minSdk = 26
+        targetSdk = 35
+        versionCode = 4
+        versionName = "v1.1.0"
+
+        buildConfigField("String", "CALENDAR_API_KEY", calendarApiKey())
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+    packaging {
+        resources {
+            excludes.addAll(listOf("/META-INF/{AL2.0,LGPL2.1}", "/META-INF/DEPENDENCIES"))
+        }
+    }
+    namespace = "com.serge.chuckstaplist"
+}
+
+dependencies {
+    implementation(project(":kmm"))
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.bundles.androidx.compose)
+    implementation(libs.bundles.androidx.lifecycle)
+    implementation(libs.koin.compose)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+}
+
+fun getLocalProperty(key: String): String? {
+    val properties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        properties.load(localPropertiesFile.inputStream())
+    }
+    return properties.getProperty(key)
+}
+
+fun calendarApiKey(): String {
+    return "\"" + (System.getenv("GoogleApiKey") ?: getLocalProperty("GoogleApiKey") ?: "") + "\""
+}
